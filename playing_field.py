@@ -6,19 +6,19 @@ Created on Tue Apr 18 11:37:07 2017
 """
 import random
 import position as PST
-import team as TM
 
 class Checkpoint(object):
     """
+    
     """
     def __init__(self, number, position):
         self.number = number
         self.position = position
         
         
-class RectangularField(object):
+class Field(object):
     """
-    A Rectangularfield represents a rectangular region (width * height)
+    A Field represents a rectangular region (width * height)
     """
     def __init__(self, width, height):
         """
@@ -32,17 +32,16 @@ class RectangularField(object):
         self.width = width
         self.height = height
         
-        #Instantiate players of teams
-        self.players_team1 = []
-        self.players_team2 = []
-        self.players = []
-
+        
         #Checkpoints
         self.checkpoints = []
         
-        for i in [1, 2, 3, 4]:            
+        for i in range(1,5):            
             self.checkpoints.append(Checkpoint(i, self.getRandomPosition()))
             
+    def addPlayers(self, team1, team2):
+        self.all_players = team1 + team2
+
         
     def getRandomPosition(self):
         """
@@ -70,54 +69,59 @@ class RectangularField(object):
         As long as this number is > 0, the game continues
         """
         number = 0
-        for player in self.players_team1 + self.players_team2:
-            if type(player) == TM.Human:
+        for player in self.all_players:
+            if player.kind == "Human":
                 number += 1
         return number
         
-    def manageInteracationsOfPlayers(self):
-        for player1 in self.players_team1 + self.players_team2:
-            for player2 in self.players_team1 + self.players_team2:
-                if type(player1) == TM.Doctor and player1.disable_timer == 0:
-                    if type(player2) == TM.Human:
-                        player2.infected = False
-                    if type(player2) == TM.Zombie:
-                        if random.random() < 0.5:
-                            player1.disable_timer = 20 if player1.disable_timer == 0 else player1.disable_timer
-                        else:
-                            player2.disable_timer = 20 if player2.disable_timer == 0 else player2.disable_timer
-                            
-                if type(player1) == TM.Human:
-                    if type(player2) == TM.Zombie:
-                        player1.infected = True
-                        player1.checkpoints = [] 
+    def updateStatusOfPlayers(self):
+        for player in self.all_players:
+            player.timer = max(player.timer - 1, 0)
+            if player.timer == 0 and player.sick == True:
+                if player.kind != "Human":
+                    player.sick = False
+                else: # player is Human, then player becomes a zombie
+                    player.kind = "Zombie"
+            
+            elif player.sick == False and player.kind == "Human":
+                for checkpoint in self.checkpoints:
+                    if checkpoint not in player.reached_checkpoints and player.calculateDistance(checkpoint) < 1:
+                        player.reached_checkpoints.append(checkpoint)
+                if len(player.reached_checkpoints) == 4:
+                    player.kind = "Doctor"
                         
-    def updateStatesOfPlayers(self):
-        for player in self.players_team1 + self.players_team2:
-            if type(player) in [TM.Doctor, TM.Zombie]:
-                player.disable_timer -= 1
-            else:
-                if player.infected:
-                    player.infection_counter += 1
-                    if player.infection_counter == 20:
-                        new_player = TM.Zombie(player.field, player.team, player.position, player.speed)
-                        if player in self.players_team1:
-                            self.players_team1.append(new_player)
-                            self.players_team1.remove(player)
-                        else:
-                            self.players_team1.append(new_player)
-                            self.players_team1.remove(player)
-                            
-                else:
-                    for chck in self.checkpoints:
-                        if player.calculateDistance(chck) < 1 and chck not in player.checkpoints_reached:
-                            player.checkpoints_reached.append(chck)
-                            
     def movePlayers(self):
-        for player in self.players_team1 + self.players_team2:
+        for player in self.all_players:
             player.selectTarget()
-            if self.isPositionInField(player.position.getNewPosition(player.target.position, player.direction, player.speed)):
-                player.updatePosition()
+            player.updatePosition()
+        
+        
+    def playersInteractions(self):
+        for player1 in self.all_players:
+            for player2 in self.all_players:
+                if player1.calculateDistance(player2) < 1:
+                    if player1.kind == "Doctor" and player1.sick == False:
+                        if player2.kind == "Human":
+                            player2.sick = False
+                            player2.timer = 0
+                        # Doctor meets a Zombie : One of them will become sick
+                        if player2.kind == "Zombie" and player2.sick == False:
+                            if random.random() < 0.5:
+                                player1.timer = 200
+                                player1.sick = True
+                            else:
+                                player2.timer = 200
+                                player2.sick = True
+                                
+                    if player1.kind == "Human" and player1.sick == False:
+                        if player2.kind == "Zombie" and player2.sick == False:
+                            player1.sick = True
+                            player1.checkpoints = []
+                            player1.timer = 200 
+                        
+
+                            
+
                 
         
         

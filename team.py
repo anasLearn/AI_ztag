@@ -27,7 +27,7 @@ class Player(object):
     """
     
     """
-    def __init__(self, field, team, state, position, speed):
+    def __init__(self, field, team, position, speed, kind):
         """
         
         """
@@ -35,12 +35,19 @@ class Player(object):
         assert speed >= 0, "speed must be a positive float"
     
         self.field = field
-        self.position = position
         self.team = team
-        self.state = state
+        self.position = position
         self.speed = speed
         self.direction = random.randrange(360)
         self.target = None
+        self.sick = False # Indicates Zombie unable to infect, or Doctor unable to heal or Human infected
+        self.timer = 0 # When this timer reaches 0 and self.sick is True, the status of the player changes.
+        self.kind = kind
+        self.reached_checkpoints = []
+
+    def __str__(self):
+        return self.kind + self.position.__str__()
+
 
     def getPlayerPosition(self):
         """
@@ -77,7 +84,7 @@ class Player(object):
         Move the player to a new position.
         """
         
-        nextPosition = self.position.getNewPosition(self.target.position, self.direction, self.speed)
+        nextPosition = self.position.getNewPosition(self.target, self.direction, self.speed)
         if self.field.isPositionInField(nextPosition):
             self.position = nextPosition            
         else:
@@ -85,107 +92,87 @@ class Player(object):
             
     def calculateDistance(self, other):
         """
-        
+        Calculate the distance from the current player to another player or checkpoint
         """
         return math.sqrt((self.position.getX() - other.position.getX())**2 + (self.position.getY() - other.position.getY())**2)
             
     def selectTarget(self):
         """
-        The player selects its target depending on its nature and its state
+        The player selects its target depending on its kind and its situtation (sick or not)
         """
-        raise NotImplementedError # don't change this!
-
-
+        if self.kind == "Zombie":
+            return self.zombieSelectTarget()
+        elif self.kind == "Human":
+            return self.humanSelectTarget()
+        elif self.kind == "Doctor":
+            return self.doctorSelectTarget()
+       
         
-        
-        
-class Zombie(Player):
-    """
-    A zombie chases humans of the other team.
-    """
-    def __init__(self, field, team, position, speed):
-        Player.__init__(self, field, team, position, speed)
-        self.disable_timer = 0
-        
-    def selectTarget(self):
+    def zombieSelectTarget(self):
         """
         The zombie's target is the nearest human from the other team
         """
-        self.target = None
-        target_distance = (100, self)
-        for player in self.field.players_team1 + self.field.players_team2:
-            if player.team != self.team and type(player) == Human:
-                distance = self.caculateDistance(self, player)
-                if distance < target_distance[0]:
-                    target_distance = (distance, player)
-        self.target = target_distance[1]
+        self.target = None        
+        for player in self.field.all_players:
+            if player.team != self.team and player.kind == "Human":
+                distance = self.calculateDistance(player)
+                if self.target is None:  
+                    min_distance = distance
+                    self.target = player
+                elif distance < min_distance:
+                    self.target = player
+                    min_distance = distance
 
-        def __str__(self):
-            return "Zombie"
-        
-class Human(Player):
-    """
-    A human goes through the different checkpoints to become a doctor
-    if infected a human looks for a doctor of either team
-    """
-    def __init__(self, field, team, position, speed):
-        Player.__init__(self, field, team, position, speed)
-        self.infected = False
-        self.infection_counter = 0
-        self.checkpoints_reached = []
 
-    def selectTarget(self):
+    def humanSelectTarget(self):
         """
         The human's target is:
             The nearest un-reached checkpoint if the human is not infected
-            The nearest doctor if the human is infected
+            The nearest doctor from either team, if the human is infected
         """
         self.target = None
-        target_distance = (100, self)
-        if not self.infected:            
-            for chck in self.field.checkpoints:
-                distance = self.calculateDistance(chck)
-                if distance < target_distance[0]:
-                    target_distance = (distance, chck)
+        if not self.sick:            
+            for checkpoint in self.field.checkpoints:
+                if checkpoint not in self.reached_checkpoints:
+                    distance = self.calculateDistance(checkpoint)
+                    if self.target is None:
+                        min_distance = distance
+                        self.target = checkpoint
+                    elif distance < min_distance:
+                        min_distance = distance
+                        self.target = checkpoint
                     
         else:
-            for player in self.field.players_team1 + self.field.players_team2:
-                if type(player) == Doctor:
-                    distance = self.caculateDistance(self, player)
-                    if distance < target_distance[0]:
-                        target_distance = (distance, player)    
-        
-        self.target = target_distance[1]
-        
-    def __str__(self):
-        return "Human"
+            for player in self.field.all_players:
+                if player.kind == "Doctor":
+                    distance = self.calculateDistance(player)
+                    if self.target is None:  
+                        min_distance = distance
+                        self.target = player
+                    elif distance < min_distance:
+                        self.target = player
+                        min_distance = distance
                 
-
-class Doctor(Player):
-    """
-    A doctor tries to heal infected humans from the same team
-    if there are none, The doctor moves randomly in the field
-    """
-    def __init__(self, field, team, position, speed):
-        Player.init(self, field, team, position, speed)
-        self.disable_timer = 0
         
-    def selectTarget(self):
+    def doctorSelectTarget(self):
         """
-        The doctor's target is the nearest infected human from the same team
+        The doctor's target is the nearest sick human from the same team
+        if there are none, The doctor moves randomly in the field
         """
         self.target = None
-        target_distance = (100, self)
-        for player in self.field.players_team1 + self.field.players_team2:
-            if type(player) == Human and player.team == self.team and player.infected == True:
-                distance = self.caculateDistance(self, player)
-                if distance < target_distance[0]:
-                    target_distance = (distance, player)     
+        for player in self.field.all_players:
+            if player.kind == "Human" and player.team == self.team and player.sick == True:
+                distance = self.calculateDistance(player)
+                if self.target is None:  
+                    min_distance = distance
+                    self.target = player
+                elif distance < min_distance:
+                    self.target = player
+                    min_distance = distance   
         
-        self.target = target_distance[1]
 
-    def __str__(self):
-        return "Doctor"
+
+
         
         
         

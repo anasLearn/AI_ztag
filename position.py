@@ -23,21 +23,26 @@ class Position(object):
     def getY(self):
         return self.y
     
-    def getNewPosition(self, target_position, angle, speed):
+    def getNewPosition(self, target, angle, speed):
         """
         Computes and returns the new Position after a single clock-tick has
         passed, with this object as the current position, and with the
         specified target, angle and speed.
         Does NOT test whether the returned position fits inside the field.
-        target_position: the position the player is trying to reach. it can be None
+        target: the point the player is trying to reach. it can be None
         angle: number representing angle in degrees, 0 <= angle < 360
         speed: positive float representing speed
         Returns: a Position object representing the new position.
         """
         old_x, old_y = self.getX(), self.getY()
-        if target_position is not None:
-            delta_y = speed * (target_position.getY() - old_y)
-            delta_x = speed * (target_position.getX() - old_x)
+        if target is not None:
+            distance = math.sqrt((target.position.getY() - old_y)**2 + (target.position.getX() - old_x)**2)
+            if distance == 0:
+                delta_y = 0
+                delta_x = 0
+            else:
+                delta_y = speed * (target.position.getY() - old_y)/distance
+                delta_x = speed * (target.position.getX() - old_x)/distance
         else:
             angle = float(angle)
             # Compute the change in position
