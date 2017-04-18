@@ -6,16 +6,11 @@ Created on Tue Apr 18 10:54:17 2017
 """
 import math
 import random
-import playing_field as PF
-import position as PST
 
 
-timer_counter = 200
-effect_time = 5
-
-class team(object):
+class Team(object):
     """
-    
+    A team contains a number of players
     """
     def __init__(self, name, num_zombies, num_humans, num_doctors):
         """
@@ -32,49 +27,44 @@ class Player(object):
     """
     
     """
-    def __init__(self, field, team, position, speed):
+    def __init__(self, field, team, state, position, speed):
         """
         
         """
-        assert type(field) == PF.RectangularField
         assert type(speed) == float or int
         assert speed >= 0, "speed must be a positive float"
     
         self.field = field
         self.position = position
         self.team = team
+        self.state = state
         self.speed = speed
         self.direction = random.randrange(360)
         self.target = None
 
     def getPlayerPosition(self):
         """
-        Return the position of the robot.
-        returns: a Position object giving the robot's position.
+        Return the position of the player.
         """
         return self.position
     
     def getPlayerDirection(self):
         """
-        Return the direction of the robot.
-        returns: an integer d giving the direction of the robot as an angle in
-        degrees, 0 <= d < 360.
+        Return the direction of the player
         """
         return self.direction
 
     def setPlayerPosition(self, position):
         """
-        Set the position of the robot to POSITION.
-        position: a Position object.
+        Set the position of the player
         """
-        assert type(position) == PST.Position
         
         self.position.x = position.x
         self.position.y = position.y #Preferable to do affect it this way since position may change
 
     def setPlayerDirection(self, direction):
         """
-        Set the direction of the robot to DIRECTION.
+        Set the direction of the player to DIRECTION.
         direction: integer representing an angle in degrees
         """
         assert type(direction) == int and direction >= 0 and direction < 360
