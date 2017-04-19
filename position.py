@@ -16,6 +16,7 @@ class Position(object):
         """
         self.x = x
         self.y = y
+        print("position created")
         
     def getX(self):
         return self.x
@@ -51,7 +52,7 @@ class Position(object):
         # Add that to the existing position
         new_x = old_x + delta_x
         new_y = old_y + delta_y
-        return Position(new_x, new_y)
+        return (new_x, new_y)
 
     def __str__(self):  
         return "(%0.2f, %0.2f)" % (self.x, self.y)

@@ -21,6 +21,8 @@ class Team(object):
         self.num_humans = 9
         self.num_doctors = 0
         self.players = []
+
+        print("Team created")
     
     
 class Player(object):
@@ -38,6 +40,16 @@ class Player(object):
         self.team = team
         self.position = position
         self.speed = speed
+        self.direction = random.randrange(360)
+        self.target = None
+        self.sick = False # Indicates Zombie unable to infect, or Doctor unable to heal or Human infected
+        self.timer = 0 # When this timer reaches 0 and self.sick is True, the status of the player changes.
+        self.kind = kind
+        self.reached_checkpoints = []
+        print("player created")
+
+    def reinitialize(self, position, kind):
+        self.position = position
         self.direction = random.randrange(360)
         self.target = None
         self.sick = False # Indicates Zombie unable to infect, or Doctor unable to heal or Human infected
@@ -86,7 +98,8 @@ class Player(object):
         
         nextPosition = self.position.getNewPosition(self.target, self.direction, self.speed)
         if self.field.isPositionInField(nextPosition):
-            self.position = nextPosition            
+            self.position.x = nextPosition[0]
+            self.position.y = nextPosition[1]            
         else:
             self.setPlayerDirection(random.randrange(360))
             

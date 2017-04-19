@@ -15,6 +15,8 @@ class Checkpoint(object):
         self.number = number
         self.position = position
         
+        print("Checkpoint Created", number, position.__str__())
+        
         
 class Field(object):
     """
@@ -39,6 +41,13 @@ class Field(object):
         for i in range(1,5):            
             self.checkpoints.append(Checkpoint(i, self.getRandomPosition()))
             
+        print("Field Created")
+        
+    def getNewCheckpoints(self):
+        for checkpoint in self.checkpoints:
+            checkpoint.position.x = self.width * random.random()
+            checkpoint.position.y = self.height * random.random()
+            
     def addPlayers(self, team1, team2):
         self.all_players = team1 + team2
 
@@ -57,9 +66,9 @@ class Field(object):
         pos: a Position object.
         returns: True if pos is in the field, False otherwise.
         """
-        assert type(pos) == PST.Position
-        if pos.x >= 0 and pos.x < self.width:
-            if pos.y >= 0 and pos.y < self.height:
+        
+        if pos[0] >= 0 and pos[0] < self.width:
+            if pos[1] >= 0 and pos[1] < self.height:
                 return True
         return False
         
