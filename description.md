@@ -27,6 +27,23 @@ In a basketball court sized arena there are 4 checkpoints placed randomly.
 
 The two teams start from opposite sides of the field.
 
+#### Strategy
+Each zombie chases the nearest human of the other team
+Each Human goes through the checkpoints. If the Human is infected, he/she goes to the nearest doctor.
+Each Doctor goes to the nearest infected human from the same team.
+
+#### 1st milestone:
+Implement a simulation of the game with each team starting with 10 players (9 Humans + 1 Zombie)
+Plot the result of the end of the game.
+
+#### 2nd milestone
+Optimize the code
+Make the simulation possible with a different number of starting players as zombies
+
+#### 3rd milestone
+Visualize the simulation
+
+
 
 
 
