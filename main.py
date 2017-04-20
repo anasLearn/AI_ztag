@@ -7,4 +7,7 @@ Created on Wed Apr 19 13:10:48 2017
 
 from simulation import runSimulation
 
-runSimulation(50)
+
+
+
+runSimulation(20)

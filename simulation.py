@@ -9,7 +9,9 @@ import pylab
 
 import playing_field as PF
 import position as PST
-import team as TM
+import player as TM
+
+
 
 #To be implemented later
 #timer_counter = 200
@@ -22,10 +24,10 @@ height = 15
 #starting positions of both teams in opposite ends of the field
 humans_1_starting_positions= [PST.Position(1,1),
                               PST.Position(1,2),
-                              PST.Position(1,3),
-                              PST.Position(1,4),
-                              PST.Position(1,10),
-                              PST.Position(1,11),
+                              #PST.Position(1,3),
+                              #PST.Position(1,4),
+                              #PST.Position(1,10),
+                              #PST.Position(1,11),
                               PST.Position(1,12),
                               PST.Position(1,13),
                               PST.Position(1,14)]
@@ -40,7 +42,12 @@ humans_2_starting_positions= [PST.Position(28,1),
                               PST.Position(28,13),
                               PST.Position(28,14)]
 
-zombies_1_starting_positions= [PST.Position(1,7)]
+zombies_1_starting_positions= [PST.Position(1,7),
+                               PST.Position(1,8),
+                               PST.Position(1,6),
+                               PST.Position(1,9),
+                               PST.Position(1,5)]
+
 zombies_2_starting_positions= [PST.Position(28,7)]
 
 #red_team = TM.Team(name="Reds", num_zombies=1, num_humans=9, num_doctors=0) #team 1
@@ -108,6 +115,11 @@ def runSimulation(num_of_times):
             team2[i].reinitialize(pos, kind="Zombie")
             i += 1
         
+
+
+
+
+
         test_field.addPlayers(team1, team2)
         test_field.getNewCheckpoints()
 
@@ -161,5 +173,4 @@ def runSimulation(num_of_times):
     pylab.title("Number of time steps of each game. 10 time steps = 1 seconds")
     pylab.show()
 
-    
         

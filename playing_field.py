@@ -5,70 +5,55 @@ Created on Tue Apr 18 11:37:07 2017
 @author: aanas / anasLearn / Anas Aamoum
 """
 import random
-import position as PST
+
+import data as DT
+
 
 class Checkpoint(object):
     """
     
     """
-    def __init__(self, number, position):
+    def __init__(self, number):
         self.number = number
-        self.position = position
+        self.x = 0
+        self.y = 0
         
-        print("Checkpoint Created", number, position.__str__())
+        print("Checkpoint %d Created" % number)
         
         
 class Field(object):
     """
     A Field represents a rectangular region (width * height)
     """
-    def __init__(self, width, height):
+    def __init__(self):
         """
-        Initializes a rectangular field with the specified width and height.
-        width: an integer > 0
-        height: an integer > 0
+        
         """
-        assert type(width) == int and type(height) == int, "width or height is not integer"
-        assert width > 0 and height > 0, "width or height is not positive numbers"
-        
-        self.width = width
-        self.height = height
-        
-        
         #Checkpoints
-        self.checkpoints = []
-        
-        for i in range(1,5):            
-            self.checkpoints.append(Checkpoint(i, self.getRandomPosition()))
+        self.checkpoints = []        
+        for i in range(DT.num_of_checkpoints):            
+            self.checkpoints.append(Checkpoint(i + 1))
             
         print("Field Created")
         
     def getNewCheckpoints(self):
+        """
+        Used to set new checkpoints at the beginning of each game
+        """
         for checkpoint in self.checkpoints:
-            checkpoint.position.x = self.width * random.random()
-            checkpoint.position.y = self.height * random.random()
+            checkpoint.x = self.width * random.random()
+            checkpoint.y = self.height * random.random()
             
     def addPlayers(self, team1, team2):
         self.all_players = team1 + team2
-
-        
-    def getRandomPosition(self):
-        """
-        Return a random position inside the room.
-        returns: a Position object.
-        """
-        return PST.Position(self.width * random.random(), self.height * random.random())    
     
 
     def isPositionInField(self, pos):
         """
-        Return True if pos is inside the field.
-        pos: a Position object.
         returns: True if pos is in the field, False otherwise.
-        """
-        
-        if pos[0] >= 0 and pos[0] < self.width:
-            if pos[1] >= 0 and pos[1] < self.height:
+        """        
+        if pos[0] >= 0 and pos[0] < DT.width:
+            if pos[1] >= 0 and pos[1] < DT.height:
                 return True
         return False
         
@@ -85,19 +70,8 @@ class Field(object):
         
     def updateStatusOfPlayers(self):
         for player in self.all_players:
-            player.timer = max(player.timer - 1, 0)
-            if player.timer == 0 and player.sick == True:
-                if player.kind != "Human":
-                    player.sick = False
-                else: # player is Human, then player becomes a zombie
-                    player.kind = "Zombie"
-            
-            elif player.sick == False and player.kind == "Human":
-                for checkpoint in self.checkpoints:
-                    if checkpoint not in player.reached_checkpoints and player.calculateDistance(checkpoint) < 1:
-                        player.reached_checkpoints.append(checkpoint)
-                if len(player.reached_checkpoints) == 4:
-                    player.kind = "Doctor"
+            player.updateStatus()
+
                         
     def movePlayers(self):
         for player in self.all_players:
