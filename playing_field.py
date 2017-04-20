@@ -80,27 +80,29 @@ class Field(object):
         
         
     def playersInteractions(self):
-        for player1 in self.all_players:
-            for player2 in self.all_players:
-                if player1.calculateDistance(player2) < 1:
-                    if player1.kind == "Doctor" and player1.sick == False:
-                        if player2.kind == "Human":
-                            player2.sick = False
-                            player2.timer = 0
-                        # Doctor meets a Zombie : One of them will become sick
-                        if player2.kind == "Zombie" and player2.sick == False:
-                            if random.random() < 0.5:
-                                player1.timer = 200
-                                player1.sick = True
-                            else:
-                                player2.timer = 200
-                                player2.sick = True
-                                
-                    if player1.kind == "Human" and player1.sick == False:
-                        if player2.kind == "Zombie" and player2.sick == False:
-                            player1.sick = True
-                            player1.checkpoints = []
-                            player1.timer = 200 
+        for player in self.all_players:
+            player.manageInteractions()
+        
+#            for player2 in self.all_players:
+#                if player1.calculateDistance(player2) < 1:
+#                    if player1.kind == "Doctor" and player1.sick == False:
+#                        if player2.kind == "Human":
+#                            player2.sick = False
+#                            player2.timer = 0
+#                        # Doctor meets a Zombie : One of them will become sick
+#                        if player2.kind == "Zombie" and player2.sick == False:
+#                            if random.random() < 0.5:
+#                                player1.timer = 200
+#                                player1.sick = True
+#                            else:
+#                                player2.timer = 200
+#                                player2.sick = True
+#                                
+#                    if player1.kind == "Human" and player1.sick == False:
+#                        if player2.kind == "Zombie" and player2.sick == False:
+#                            player1.sick = True
+#                            player1.checkpoints = []
+#                            player1.timer = 200 
                         
 
                             

@@ -50,7 +50,7 @@ class Player(object):
         self.to_infected_counter = 0 #when  healthy "Human" is near a "Zombie" this counter starts incrementing
         self.mark_checkpoint_counter = 0 #When healthy "Human" is near a "checkpoint" this counter starts incrementing
         self.to_zombie_counter = 0 #When a "Human" is infected, this counter starts incrementing
-        self.to_healed_counter = 0 #when a "Huam" is infected, and is near a "Doctor" this counter increments
+        self.to_healed_counter = 0 #when a "Human" is infected, and is near a "Doctor" this counter increments
         
         
         #Attributes for "Doctor" and "Zombie"
@@ -108,13 +108,6 @@ class Player(object):
             #Follow the nearest "Human" from the other team who is not infected
             if player.team != self.team and player.kind == "Human" and not player.infected:
                 min_distance = FN.setTarget(min_distance, self, player)
-#                distance = self.calculateDistance(player)
-#                if self.target is None:  
-#                    min_distance = distance
-#                    self.target = player
-#                elif distance < min_distance:
-#                    self.target = player
-#                    min_distance = distance
 
 
     def humanSelectTarget(self):
@@ -129,25 +122,11 @@ class Player(object):
             for checkpoint in self.field.checkpoints:
                 if checkpoint not in self.reached_checkpoints:
                     min_distance = FN.setTarget(min_distance, self, checkpoint)
-#                    distance = self.calculateDistance(checkpoint)
-#                    if self.target is None:
-#                        min_distance = distance
-#                        self.target = checkpoint
-#                    elif distance < min_distance:
-#                        min_distance = distance
-#                        self.target = checkpoint
                     
         else:
             for player in self.field.all_players:
                 if player.kind == "Doctor" and not player.disabled:
                     min_distance = FN.setTarget(min_distance, self, player)
-#                    distance = self.calculateDistance(player)
-#                    if self.target is None:  
-#                        min_distance = distance
-#                        self.target = player
-#                    elif distance < min_distance:
-#                        self.target = player
-#                        min_distance = distance
                 
         
     def doctorSelectTarget(self):
@@ -159,14 +138,7 @@ class Player(object):
         min_distance = 0
         for player in self.field.all_players:
             if player.kind == "Human" and player.team == self.team and player.infected == True:
-                min_distance = FN.setTarget(min_distance, self, player)
-#                distance = self.calculateDistance(player)
-#                if self.target is None:  
-#                    min_distance = distance
-#                    self.target = player
-#                elif distance < min_distance:
-#                    self.target = player
-#                    min_distance = distance   
+                min_distance = FN.setTarget(min_distance, self, player) 
         
     def updateStatus(self):
         """
@@ -203,20 +175,29 @@ class Player(object):
         completes the disability period
         """
         self.zombieUpdateStatus() #Since both Zombie and Doctor have similar behavior in status updating
+        
+    def humanUpdateStatus(self):
+        """
+        
+        """
+        if self.infected:
+            self.to_zombie_counter += 1
+            if self.to_zombie_counter == DT.resolution * DT.infection_period:
+                self.kind = "Zombie"
+        else:
+            number_of_checkpoints_nearby = 0
+            for checkpoint in self.field.checkpoints:
+                if checkpoint not in self.reached_checkpoints and self.calculateDistance(checkpoint) < DT.effect_distance:
+                    number_of_checkpoints_nearby += 1 #The condition of the if is True => There is a checkpoint nearby
+                    self.mark_checkpoint_counter += 1
+                    if self.mark_checkpoint_counter == DT.resolution * DT.effect_time:
+                        self.reached_checkpoints.append(checkpoint)
+                        self.mark_checkpoint_counter = 0
+            if number_of_checkpoints_nearby == 0:
+                self.mark_checkpoint_counter = 0
+            if len(self.reached_checkpoints) == DT.num_of_checkpoints:
+                self.kind = "Doctor"
                 
-#            player.timer = max(player.timer - 1, 0)
-#            if player.timer == 0 and player.sick == True:
-#                if player.kind != "Human":
-#                    player.sick = False
-#                else: # player is Human, then player becomes a zombie
-#                    player.kind = "Zombie"
-#            
-#            elif player.sick == False and player.kind == "Human":
-#                for checkpoint in self.checkpoints:
-#                    if checkpoint not in player.reached_checkpoints and player.calculateDistance(checkpoint) < 1:
-#                        player.reached_checkpoints.append(checkpoint)
-#                if len(player.reached_checkpoints) == 4:
-#                    player.kind = "Doctor"
 
         
         
