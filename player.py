@@ -39,7 +39,7 @@ class Player(object):
         self.kind = kind
         
         #Automatically set attributes
-        self.speed = DT.speed_range[0] + random.random() * (DT.speed_range[1] - DT.speed_range[0])
+        self.speed = (DT.speed_range[0] + random.random() * (DT.speed_range[1] - DT.speed_range[0])) / DT.resolution
         self.direction = random.randrange(360)
         self.target = None
         
@@ -63,7 +63,7 @@ class Player(object):
 
 
     def __str__(self):
-        return str(self.team) + " " + str(self.kind) + " " + "(%0.2f, %0.2f)" % (self.x, self.y)
+        return str(self.kind[0:3]) + " " + "(%0.2f, %0.2f)" % (self.x, self.y) + self.speed
 
 
     def updatePosition(self):
@@ -103,11 +103,17 @@ class Player(object):
         The zombie's target is the nearest non-infected Human from the other team
         """
         self.target = None
-        min_distance = 0        
+        min_distance = 0
+        #Follow the nearest "Human" from the other team who is not infected        
         for player in self.field.all_players:
-            #Follow the nearest "Human" from the other team who is not infected
+            
             if player.team != self.team and player.kind == "Human" and not player.infected:
                 min_distance = FN.setTarget(min_distance, self, player)
+        
+        if self.target == None: #If all the humans of the other team are infected, follow them !
+            for player in self.field.all_players:
+                if player.team != self.team and player.kind == "Human" and player.infected:
+                    min_distance = FN.setTarget(min_distance, self, player)
 
 
     def humanSelectTarget(self):

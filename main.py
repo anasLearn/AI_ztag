@@ -10,4 +10,4 @@ from simulation import runSimulation
 
 
 
-runSimulation(20)
+runSimulation(100)

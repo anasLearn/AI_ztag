@@ -15,10 +15,10 @@ import player as PL
 #starting positions of both teams in opposite ends of the field
 humans_1_starting_positions= [(1,1),
                               (1,2),
-#                              (1,3),
-#                              (1,4),
-#                              (1,10),
-#                              (1,11),
+                              (1,3),
+                              (1,4),
+                              (1,10),
+                              (1,11),
                               (1,12),
                               (1,13),
                               (1,14)]
@@ -33,11 +33,11 @@ humans_2_starting_positions= [(28,1),
                               (28,13),
                               (28,14)]
 
-zombies_1_starting_positions= [(1,7),
-                               (1,8),
-                               (1,6),
-                               (1,9),
-                               (1,5)]
+zombies_1_starting_positions= [(2,7)]
+#                               (2,8),
+#                               (2,6),
+#                               (2,9),
+#                               (2,5)]
 
 zombies_2_starting_positions= [(28,7)]
 
@@ -51,19 +51,19 @@ def runSimulation(num_of_times):
     """
     
     test_field = PF.Field()
-    team1 = []
-    team2 = []
+    team1 = {"name" : "Team 1", "players" : [] }
+    team2 = {"name" : "Team 2", "players" : [] }
 
     
     for pos in humans_1_starting_positions:
-        team1.append(PL.Player(test_field, team1, pos, kind="Human"))
+        team1["players"].append(PL.Player(test_field, team1, pos, kind="Human"))
     for pos in zombies_1_starting_positions:
-        team1.append(PL.Player(test_field, team1, pos, kind="Zombie"))
+        team1["players"].append(PL.Player(test_field, team1, pos, kind="Zombie"))
             
     for pos in humans_2_starting_positions:
-        team2.append(PL.Player(test_field, team2, pos, kind="Human"))
+        team2["players"].append(PL.Player(test_field, team2, pos, kind="Human"))
     for pos in zombies_2_starting_positions:
-        team2.append(PL.Player(test_field, team2, pos, kind="Zombie"))
+        team2["players"].append(PL.Player(test_field, team2, pos, kind="Zombie"))
     
 
     
@@ -89,42 +89,51 @@ def runSimulation(num_of_times):
     def oneSimulation():
         i = 0    
         for pos in humans_1_starting_positions:
-            team1[i].initialize(pos, kind="Human")
+            team1["players"][i].initialize(pos, kind="Human")
             i += 1
         for pos in zombies_1_starting_positions:
-            team1[i].initialize(pos, kind="Zombie")
+            team1["players"][i].initialize(pos, kind="Zombie")
             i += 1       
         
         i = 0
         for pos in humans_2_starting_positions:
-            team2[i].initialize(pos, kind="Human")
+            team2["players"][i].initialize(pos, kind="Human")
             i += 1
         for pos in zombies_2_starting_positions:
-            team2[i].initialize(pos, kind="Zombie")
+            team2["players"][i].initialize(pos, kind="Zombie")
             i += 1
             
             
-        test_field.addPlayers(team1, team2)
+        test_field.addPlayers(team1["players"], team2["players"])
         test_field.getNewCheckpoints()
 
         
         i = 0
         while test_field.getNumberOfHumans() > 0:
+            test_field.playersInteractions()
             test_field.updateStatusOfPlayers()
             test_field.movePlayers()            
-            test_field.playersInteractions()
-            i += 1
             
+            i += 1
+#            print("\n\n\n\nStep", i)
+#            print(team1["name"])
+#            for player in team1["players"]:
+#                print(player, end = "--")
+#            
+#            print("\n\n")
+#            print(team2["name"])
+#            for player in team2["players"]:
+#                print(player, end = "--")
         number_of_steps.append(i)
             
 
         
-        team1_zombies.append(numberOfElements(team1, "Zombie"))
-        team1_doctors.append(numberOfElements(team1, "Doctor"))
+        team1_zombies.append(numberOfElements(team1["players"], "Zombie"))
+        team1_doctors.append(numberOfElements(team1["players"], "Doctor"))
         
         
-        team2_zombies.append(numberOfElements(team2, "Zombie"))
-        team2_doctors.append(numberOfElements(team2, "Doctor"))
+        team2_zombies.append(numberOfElements(team2["players"], "Zombie"))
+        team2_doctors.append(numberOfElements(team2["players"], "Doctor"))
 
 
 
@@ -137,8 +146,8 @@ def runSimulation(num_of_times):
 
     
     
-    pylab.plot(team1_zombies)
-    pylab.plot(team1_doctors)
+    pylab.plot(team1_zombies, 'ro')
+    pylab.plot(team1_doctors, 'bo')
     pylab.title("Team1 Number of Docotrs and Zombies at the end of each game")
     pylab.ylim(-1, 11)
     pylab.legend(("Z", "D"))
