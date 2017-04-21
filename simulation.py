@@ -8,50 +8,39 @@ Created on Tue Apr 18 10:17:32 2017
 import pylab
 
 import playing_field as PF
-import position as PST
-import player as TM
+import player as PL
 
 
-
-#To be implemented later
-#timer_counter = 200
-#effect_time = 5
-
-#metric size of basket-ball field
-width = 29
-height = 15
 
 #starting positions of both teams in opposite ends of the field
-humans_1_starting_positions= [PST.Position(1,1),
-                              PST.Position(1,2),
-                              #PST.Position(1,3),
-                              #PST.Position(1,4),
-                              #PST.Position(1,10),
-                              #PST.Position(1,11),
-                              PST.Position(1,12),
-                              PST.Position(1,13),
-                              PST.Position(1,14)]
+humans_1_starting_positions= [(1,1),
+                              (1,2),
+#                              (1,3),
+#                              (1,4),
+#                              (1,10),
+#                              (1,11),
+                              (1,12),
+                              (1,13),
+                              (1,14)]
 
-humans_2_starting_positions= [PST.Position(28,1),
-                              PST.Position(28,2),
-                              PST.Position(28,3),
-                              PST.Position(28,4),
-                              PST.Position(28,10),
-                              PST.Position(28,11),
-                              PST.Position(28,12),
-                              PST.Position(28,13),
-                              PST.Position(28,14)]
+humans_2_starting_positions= [(28,1),
+                              (28,2),
+                              (28,3),
+                              (28,4),
+                              (28,10),
+                              (28,11),
+                              (28,12),
+                              (28,13),
+                              (28,14)]
 
-zombies_1_starting_positions= [PST.Position(1,7),
-                               PST.Position(1,8),
-                               PST.Position(1,6),
-                               PST.Position(1,9),
-                               PST.Position(1,5)]
+zombies_1_starting_positions= [(1,7),
+                               (1,8),
+                               (1,6),
+                               (1,9),
+                               (1,5)]
 
-zombies_2_starting_positions= [PST.Position(28,7)]
+zombies_2_starting_positions= [(28,7)]
 
-#red_team = TM.Team(name="Reds", num_zombies=1, num_humans=9, num_doctors=0) #team 1
-#blue_team = TM.Team(name="Blues", num_zombies=1, num_humans=9, num_doctors=0) # team 2
 
 
 
@@ -61,20 +50,20 @@ def runSimulation(num_of_times):
     At the beginning of each step, a player defines its target, then moves towards it
     """
     
-    test_field = PF.Field(width, height)
+    test_field = PF.Field()
     team1 = []
     team2 = []
 
     
     for pos in humans_1_starting_positions:
-        team1.append(TM.Player(test_field, team1, pos, speed=0.35, kind="Human"))
+        team1.append(PL.Player(test_field, team1, pos, kind="Human"))
     for pos in zombies_1_starting_positions:
-        team1.append(TM.Player(test_field, team1, pos, speed=0.35, kind="Zombie"))
+        team1.append(PL.Player(test_field, team1, pos, kind="Zombie"))
             
     for pos in humans_2_starting_positions:
-        team2.append(TM.Player(test_field, team2, pos, speed=0.35, kind="Human"))
+        team2.append(PL.Player(test_field, team2, pos, kind="Human"))
     for pos in zombies_2_starting_positions:
-        team2.append(TM.Player(test_field, team2, pos, speed=0.35, kind="Zombie"))
+        team2.append(PL.Player(test_field, team2, pos, kind="Zombie"))
     
 
     
@@ -100,26 +89,21 @@ def runSimulation(num_of_times):
     def oneSimulation():
         i = 0    
         for pos in humans_1_starting_positions:
-            team1[i].reinitialize(pos, kind="Human")
+            team1[i].initialize(pos, kind="Human")
             i += 1
         for pos in zombies_1_starting_positions:
-            team1[i].reinitialize(pos, kind="Zombie")
-            i += 1
-        
+            team1[i].initialize(pos, kind="Zombie")
+            i += 1       
         
         i = 0
         for pos in humans_2_starting_positions:
-            team2[i].reinitialize(pos, kind="Human")
+            team2[i].initialize(pos, kind="Human")
             i += 1
         for pos in zombies_2_starting_positions:
-            team2[i].reinitialize(pos, kind="Zombie")
+            team2[i].initialize(pos, kind="Zombie")
             i += 1
-        
-
-
-
-
-
+            
+            
         test_field.addPlayers(team1, team2)
         test_field.getNewCheckpoints()
 
@@ -156,7 +140,7 @@ def runSimulation(num_of_times):
     pylab.plot(team1_zombies)
     pylab.plot(team1_doctors)
     pylab.title("Team1 Number of Docotrs and Zombies at the end of each game")
-    pylab.ylim(0, 10)
+    pylab.ylim(-1, 11)
     pylab.legend(("Z", "D"))
     pylab.show()
     
@@ -165,7 +149,7 @@ def runSimulation(num_of_times):
     pylab.plot(team2_zombies)
     pylab.plot(team2_doctors)
     pylab.title("Team2 Number of Docotrs and Zombies at the end of each game")
-    pylab.ylim(0, 10)
+    pylab.ylim(-1, 11)
     pylab.legend(("Z", "D"))
     pylab.show()
 

@@ -41,8 +41,8 @@ class Field(object):
         Used to set new checkpoints at the beginning of each game
         """
         for checkpoint in self.checkpoints:
-            checkpoint.x = self.width * random.random()
-            checkpoint.y = self.height * random.random()
+            checkpoint.x = DT.width * random.random()
+            checkpoint.y = DT.height * random.random()
             
     def addPlayers(self, team1, team2):
         self.all_players = team1 + team2
@@ -81,28 +81,9 @@ class Field(object):
         
     def playersInteractions(self):
         for player in self.all_players:
-            player.manageInteractions()
+            player.interactions()
         
-#            for player2 in self.all_players:
-#                if player1.calculateDistance(player2) < 1:
-#                    if player1.kind == "Doctor" and player1.sick == False:
-#                        if player2.kind == "Human":
-#                            player2.sick = False
-#                            player2.timer = 0
-#                        # Doctor meets a Zombie : One of them will become sick
-#                        if player2.kind == "Zombie" and player2.sick == False:
-#                            if random.random() < 0.5:
-#                                player1.timer = 200
-#                                player1.sick = True
-#                            else:
-#                                player2.timer = 200
-#                                player2.sick = True
-#                                
-#                    if player1.kind == "Human" and player1.sick == False:
-#                        if player2.kind == "Zombie" and player2.sick == False:
-#                            player1.sick = True
-#                            player1.checkpoints = []
-#                            player1.timer = 200 
+
                         
 
                             

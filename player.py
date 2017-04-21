@@ -164,8 +164,10 @@ class Player(object):
                 self.to_disabled_counter = 0
                 self.to_enabled_counter = 0                
         else: 
-            if self.to_disabled_counter == DT.resolution * DT.effect_time:
-                self.disabled = True                
+            if self.to_disabled_counter >= DT.resolution * DT.effect_time:
+                if random.random() < 0.5: #A possibility of 50% to become disabled
+                    self.disabled = True
+                #THe counters are reset to 0 to ensure that the probability is 50%, otherwise, it will be higher
                 self.to_disabled_counter = 0
                 self.to_enabled_counter = 0
 
@@ -178,12 +180,20 @@ class Player(object):
         
     def humanUpdateStatus(self):
         """
-        
+        If a human is infected:
+            a counter is incrementing to determine when he/she will turn to zombie
+            IF the healing counter reaches the effect_time, the human is not infected anymore
+        If a human is not infected, he/she either:
+            validates new checkpoints
+            becomes infected
         """
         if self.infected:
             self.to_zombie_counter += 1
             if self.to_zombie_counter == DT.resolution * DT.infection_period:
                 self.kind = "Zombie"
+            if self.to_healed_counter >= DT.resolution * DT.effect_time:
+                self.infected = False
+                
         else:
             number_of_checkpoints_nearby = 0
             for checkpoint in self.field.checkpoints:
@@ -197,8 +207,73 @@ class Player(object):
                 self.mark_checkpoint_counter = 0
             if len(self.reached_checkpoints) == DT.num_of_checkpoints:
                 self.kind = "Doctor"
+            #if a zombie has been nearby for the effect_time, the human becomes infected
+            elif self.to_infected_counter >= DT.resolution * DT.effect_time:
+                self.infected = True
+                self.reached_checkpoints = []
+                self.to_infected_counter = 0
+                self.mark_checkpoint_counter = 0
+                self.to_zombie_counter = 0
+                self.to_healed_counter = 0
                 
-
+                
+    def interactions(self):
+        """
+        The player updates its status, depending on its kind and current status
+        """
+        if self.kind == "Zombie":
+            return self.zombieInteractions()
+        elif self.kind == "Human":
+            return self.humanInteractions()
+        elif self.kind == "Doctor":
+            return self.doctorInteractions()
+            
+    def zombieInteractions(self):
+        """
+        Zombies are affected by Doctors
+        """
+        number_doctors_nearby = 0
+        for player in self.field.all_players:
+            if player.kind == "Doctor" and self.calculateDistance(player) < DT.effect_distance:
+                self.to_disabled_counter += 1
+                number_doctors_nearby += 1
+        if number_doctors_nearby == 0:
+            self.to_disabled_counter = 0
+        
+    def doctorInteractions(self):
+        """
+        Doctors are affected by Zombies
+        """
+        number_zombies_nearby = 0
+        for player in self.field.all_players:
+            if player.kind == "Zombie" and self.calculateDistance(player) < DT.effect_distance:
+                self.to_disabled_counter += 1
+                number_zombies_nearby += 1
+        if number_zombies_nearby == 0:
+            self.to_disabled_counter = 0
+            
+    def humanInteractions(self):
+        """
+        Healthy humans are affected by zombies
+        Infected humans are affect by doctors
+        """
+        if self.infected:
+            number_doctors_nearby = 0
+            for player in self.field.all_players:
+                if player.kind == "Doctor" and not player.disabled and self.calculateDistance(player) < DT.effect_distance:
+                    self.to_healed_counter += 1
+                    number_doctors_nearby += 1
+            if number_doctors_nearby == 0:
+                self.to_healed_counter = 0
+            
+        else:
+            number_zombies_nearby = 0
+            for player in self.field.all_players:
+                if player.kind == "Zombie" and not player.disabled and self.calculateDistance(player) < DT.effect_distance:
+                    self.to_infected_counter += 1
+                    number_zombies_nearby += 1
+            if number_zombies_nearby == 0:
+                self.to_infected_counter = 0
         
         
         
