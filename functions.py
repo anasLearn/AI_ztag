@@ -4,6 +4,8 @@ Created on Tue Apr 18 11:58:04 2017
 
 @author: aanas / anasLearn / Anas Aamoum
 """
+import data as DT
+
 import math
 # === 
 
@@ -48,4 +50,12 @@ def setTarget(min_distance, chaser, target):
         chaser.target = target
         min_distance = distance
     return min_distance
+    
+def setStartingPosition(positions, num_of_zombies, abscissa):
+    dist = DT.height / (num_of_zombies + 1)
+    for i in range(num_of_zombies):
+        positions.append((abs(abscissa - 2), (i + 1) * dist))
+    dist = DT.height / (DT.team_size - num_of_zombies + 1)
+    for i in range(DT.team_size - num_of_zombies):
+        positions.append((abs(abscissa - 0.1), (i + 1) * dist))
         

@@ -6,77 +6,53 @@ Created on Tue Apr 18 10:17:32 2017
 """
 
 import pylab
+import statistics
 
 import playing_field as PF
 import player as PL
-
-
+import functions as FN
+import data as DT
 
 #starting positions of both teams in opposite ends of the field
-humans_1_starting_positions= [(1,1),
-                              (1,2),
-                              (1,3),
-                              (1,4),
-                              (1,10),
-                              (1,11),
-                              (1,12),
-                              (1,13),
-                              (1,14)]
+team1_starting_positions= []
+team2_starting_positions= []
 
-humans_2_starting_positions= [(28,1),
-                              (28,2),
-                              (28,3),
-                              (28,4),
-                              (28,10),
-                              (28,11),
-                              (28,12),
-                              (28,13),
-                              (28,14)]
+z1 = int(input("Enter number of zombies for Team 1: "))
+z2 = int(input("Enter number of zombies for Team 2: "))
 
-zombies_1_starting_positions= [(2,7)]
-#                               (2,8),
-#                               (2,6),
-#                               (2,9),
-#                               (2,5)]
+FN.setStartingPosition(team1_starting_positions, z1, 0)
+FN.setStartingPosition(team2_starting_positions, z2, DT.width)
+    
 
-zombies_2_starting_positions= [(28,7)]
-
-
-
-
-
-def runSimulation(num_of_times):
+def runSimulation(num_of_times, num_zomb_team1 = z1, num_zomb_team2 = z2, plot=True, file=None):
     """
-    At the beginning of each step, a player defines its target, then moves towards it
+    Run the simulation for a number of times set with the parameter num_times
+    Plot the results
     """
+
     
     test_field = PF.Field()
-    team1 = {"name" : "Team 1", "players" : [] }
-    team2 = {"name" : "Team 2", "players" : [] }
+    team1 = []
+    team2 = []
+
+    #These variables count the number of victories of each team and the draws
+    results = { "team1_victories" : 0, "team2_victories" : 0, "draws" : 0, "fail" : 0 }
 
     
-    for pos in humans_1_starting_positions:
-        team1["players"].append(PL.Player(test_field, team1, pos, kind="Human"))
-    for pos in zombies_1_starting_positions:
-        team1["players"].append(PL.Player(test_field, team1, pos, kind="Zombie"))
-            
-    for pos in humans_2_starting_positions:
-        team2["players"].append(PL.Player(test_field, team2, pos, kind="Human"))
-    for pos in zombies_2_starting_positions:
-        team2["players"].append(PL.Player(test_field, team2, pos, kind="Zombie"))
-    
+    for _ in range(DT.team_size):
+        team1.append(PL.Player(test_field, team1, (0, 0), kind="-"))
+        team2.append(PL.Player(test_field, team2, (0, 0), kind="-"))
 
-    
-    
-    
-    team1_zombies = []
+    #The following lists contain the number of doctors in each team at the end of each simulation (game)
     team1_doctors = []
-
-    
-    team2_zombies = []
     team2_doctors = []
 
-    number_of_steps = [] #How many steps each simulation takes
+    #The following lists contain the number of zombies in each team at the end of each simulation (game)
+    team1_zombies = []
+    team2_zombies = []
+    
+    #How many steps each simulation takes
+    number_of_steps = [] 
 
     
     def numberOfElements(team, kind):
@@ -88,53 +64,56 @@ def runSimulation(num_of_times):
     
     def oneSimulation():
         i = 0    
-        for pos in humans_1_starting_positions:
-            team1["players"][i].initialize(pos, kind="Human")
+        for pos in team1_starting_positions[0: num_zomb_team1]:
+            team1[i].initialize(pos, kind="Zombie")
             i += 1
-        for pos in zombies_1_starting_positions:
-            team1["players"][i].initialize(pos, kind="Zombie")
+        for pos in team1_starting_positions[num_zomb_team1:]:
+            team1[i].initialize(pos, kind="Human")
             i += 1       
         
-        i = 0
-        for pos in humans_2_starting_positions:
-            team2["players"][i].initialize(pos, kind="Human")
+        i = 0    
+        for pos in team2_starting_positions[0: num_zomb_team2]:
+            team2[i].initialize(pos, kind="Zombie")
             i += 1
-        for pos in zombies_2_starting_positions:
-            team2["players"][i].initialize(pos, kind="Zombie")
-            i += 1
+        for pos in team2_starting_positions[num_zomb_team2:]:
+            team2[i].initialize(pos, kind="Human")
+            i += 1 
             
             
-        test_field.addPlayers(team1["players"], team2["players"])
+        test_field.addPlayers(team1, team2)
         test_field.getNewCheckpoints()
 
         
-        i = 0
+        failed = False
         while test_field.getNumberOfHumans() > 0:
             test_field.playersInteractions()
+            test_field.movePlayers()
             test_field.updateStatusOfPlayers()
-            test_field.movePlayers()            
-            
             i += 1
-#            print("\n\n\n\nStep", i)
-#            print(team1["name"])
-#            for player in team1["players"]:
-#                print(player, end = "--")
-#            
-#            print("\n\n")
-#            print(team2["name"])
-#            for player in team2["players"]:
-#                print(player, end = "--")
+
+            if i > 1200 * DT.resolution:
+                print("simulation taking too long")
+                failed = True
+                break
+
         number_of_steps.append(i)
             
 
-        
-        team1_zombies.append(numberOfElements(team1["players"], "Zombie"))
-        team1_doctors.append(numberOfElements(team1["players"], "Doctor"))
-        
-        
-        team2_zombies.append(numberOfElements(team2["players"], "Zombie"))
-        team2_doctors.append(numberOfElements(team2["players"], "Doctor"))
-
+        if not failed:
+            team1_zombies.append(numberOfElements(team1, "Zombie"))
+            team1_doctors.append(numberOfElements(team1, "Doctor"))        
+            
+            team2_zombies.append(numberOfElements(team2, "Zombie"))
+            team2_doctors.append(numberOfElements(team2, "Doctor"))
+    
+            if team1_doctors[-1] > team2_doctors[-1]:
+                results["team1_victories"] += 1
+            elif team1_doctors[-1] < team2_doctors[-1]:
+                results["team2_victories"] += 1
+            else:
+                results["draws"] += 1
+        else:            
+            results["fail"] += 1
 
 
     for j in range(num_of_times):        
@@ -145,25 +124,50 @@ def runSimulation(num_of_times):
 
 
     
+    if plot:
+        pylab.plot(team1_doctors, "ro")
+        pylab.plot(team2_doctors, "y*")
+        pylab.title("Number of doctors at the end of each game")
+        pylab.ylim(-1, 11)
+        pylab.legend(("T1", "T2"))
+        pylab.show()      
+        
     
-    pylab.plot(team1_zombies, 'ro')
-    pylab.plot(team1_doctors, 'bo')
-    pylab.title("Team1 Number of Docotrs and Zombies at the end of each game")
-    pylab.ylim(-1, 11)
-    pylab.legend(("Z", "D"))
-    pylab.show()
-    
-    
-    
-    pylab.plot(team2_zombies)
-    pylab.plot(team2_doctors)
-    pylab.title("Team2 Number of Docotrs and Zombies at the end of each game")
-    pylab.ylim(-1, 11)
-    pylab.legend(("Z", "D"))
-    pylab.show()
+        pylab.plot(number_of_steps)
+        pylab.title("Number of time steps of each game. %d time steps = 1 seconds" % DT.resolution)
+        pylab.show()
 
-    pylab.plot(number_of_steps)
-    pylab.title("Number of time steps of each game. 10 time steps = 1 seconds")
-    pylab.show()
-
+    print("Team 1: Number of zombies at the start: ", num_zomb_team1)
+    print("Team 2: Number of zombies at the start: ", num_zomb_team2)
+    print("Team 1 victories: ", results["team1_victories"])
+    print("Team 2 victories: ", results["team2_victories"])
+    print("Draws: ", results["draws"])
+    print("Number of failed simulations: ", results["fail"])
+    print("Team 1: Total number of Doctors:", sum(team1_doctors))
+    print("Team 2: Total number of Doctors:", sum(team2_doctors))
+    
+    if file != None:
+        file.write("Team 1: Number of zombies at the start: " + str(num_zomb_team1) + "\n")
+        file.write("Team 2: Number of zombies at the start: " + str(num_zomb_team2) + "\n")
+        file.write("Team 1 victories: " + str(results["team1_victories"]) + "\n")
+        file.write("Team 2 victories: " + str(results["team2_victories"]) + "\n")
+        file.write("Draws: " + str(results["draws"]) + "\n")
+        file.write("Number of failed simulations: " + str(results["fail"]) + "\n")        
+        file.write("Team 1: Total number of Doctors:" + str(sum(team1_doctors)) + "\n")
+        file.write("Team 2: Total number of Doctors:" + str(sum(team2_doctors)) + "\n")
+        file.write("\n\n\n")
+    
+def runAllSimulations(num_of_times, file_name):
+    results_file = open(file_name, 'w')
+    for i in range(1, DT.team_size):
+        for j in range(1, DT.team_size):
+            runSimulation(num_of_times, i, j, plot=False, file=results_file)
+        results_file.write("##################\n#####################\n#############\n\n\n")
+    results_file.close()
+        
+        
+        
+        
+        
+        
         

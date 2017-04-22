@@ -1,12 +1,10 @@
-# Problem 5
-
 # ZTAG Simulation
 
 ## Objective
 Create a simulation of the ztag game.
 
 ## Programming language
-Python
+Python 3
 
 ## Background
 #### Rules:
@@ -27,10 +25,12 @@ In a basketball court sized arena there are 4 checkpoints placed randomly.
 
 The two teams start from opposite sides of the field.
 
+
+## Solution
 #### Strategy
-Each zombie chases the nearest human of the other team
+Each zombie chases the nearest healthy human of the other team. If all the humans of the other team are infected, the zombies chase them to make sure they don't get healed by a doctor.
 Each Human goes through the checkpoints. If the Human is infected, he/she goes to the nearest doctor.
-Each Doctor goes to the nearest infected human from the same team.
+Each Doctor goes to the nearest infected human from the same team. If all the humans from the same team are healthy, the doctor moves randomly in the field.
 
 #### 1st milestone:
 Implement a simulation of the game with each team starting with 10 players (9 Humans + 1 Zombie)
@@ -42,6 +42,8 @@ Make the simulation possible with a different number of starting players as zomb
 
 #### 3rd milestone
 Visualize the simulation
+
+
 
 
 

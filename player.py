@@ -63,7 +63,7 @@ class Player(object):
 
 
     def __str__(self):
-        return str(self.kind[0:3]) + " " + "(%0.2f, %0.2f)" % (self.x, self.y) + self.speed
+        return self.kind[0:3] + " (%0.2f, %0.2f) " % (self.x, self.y)
 
 
     def updatePosition(self):
@@ -173,9 +173,9 @@ class Player(object):
             if self.to_disabled_counter >= DT.resolution * DT.effect_time:
                 if random.random() < 0.5: #A possibility of 50% to become disabled
                     self.disabled = True
-                #THe counters are reset to 0 to ensure that the probability is 50%, otherwise, it will be higher
-                self.to_disabled_counter = 0
-                self.to_enabled_counter = 0
+                    ###
+                    self.to_disabled_counter = 0
+                    self.to_enabled_counter = 0
 
     def doctorUpdateStatus(self):
         """
@@ -240,7 +240,7 @@ class Player(object):
         """
         number_doctors_nearby = 0
         for player in self.field.all_players:
-            if player.kind == "Doctor" and self.calculateDistance(player) < DT.effect_distance:
+            if player.kind == "Doctor" and not player.disabled and self.calculateDistance(player) < DT.effect_distance:
                 self.to_disabled_counter += 1
                 number_doctors_nearby += 1
         if number_doctors_nearby == 0:
@@ -252,7 +252,7 @@ class Player(object):
         """
         number_zombies_nearby = 0
         for player in self.field.all_players:
-            if player.kind == "Zombie" and self.calculateDistance(player) < DT.effect_distance:
+            if player.kind == "Zombie" and not player.disabled and self.calculateDistance(player) < DT.effect_distance:
                 self.to_disabled_counter += 1
                 number_zombies_nearby += 1
         if number_zombies_nearby == 0:
