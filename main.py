@@ -12,5 +12,8 @@ from simulation import runSimulation, runAllSimulations
 
 #runSimulation(num_of_times = 5)
 
-runAllSimulations(num_of_times = 10000, file_name="results_standard_speed.txt")
+
+
+#This runs all the combinations. Choose file format txt or csv
+runAllSimulations(num_of_times = 1000, file_name="results_standard_speed.csv")
 

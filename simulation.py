@@ -119,7 +119,7 @@ def runSimulation(num_of_times, num_zomb_team1 = z1, num_zomb_team2 = z2, plot=T
     for j in range(num_of_times):        
         print("simulation number", j + 1, "running...", end=" ")
         oneSimulation()
-        print("done")
+        print("done, T1_Zom =", num_zomb_team1, "   T2_Zom =", num_zomb_team2)
     
 
 
@@ -147,23 +147,29 @@ def runSimulation(num_of_times, num_zomb_team1 = z1, num_zomb_team2 = z2, plot=T
     print("Team 2: Total number of Doctors:", sum(team2_doctors))
     
     if file != None:
-        file.write("Team 1: Number of zombies at the start: " + str(num_zomb_team1) + "\n")
-        file.write("Team 2: Number of zombies at the start: " + str(num_zomb_team2) + "\n")
-        file.write("Team 1 victories: " + str(results["team1_victories"]) + "\n")
-        file.write("Team 2 victories: " + str(results["team2_victories"]) + "\n")
-        file.write("Draws: " + str(results["draws"]) + "\n")
-        file.write("Number of failed simulations: " + str(results["fail"]) + "\n")        
-        file.write("Team 1: Total number of Doctors:" + str(sum(team1_doctors)) + "\n")
-        file.write("Team 2: Total number of Doctors:" + str(sum(team2_doctors)) + "\n")
-        file.write("\n\n\n")
+        file.write(str(DT.team_size) + ",")
+        file.write(str(num_zomb_team1) + ",")
+        file.write(str(num_zomb_team2) + ",")
+        file.write(str(results["team1_victories"]) + ",")
+        file.write(str(results["team2_victories"]) + ",")
+        file.write(str(results["draws"]) + ",")     
+        file.write(str(sum(team1_doctors)) + ",")
+        file.write(str(sum(team2_doctors)) + ",")
+        file.write(str(sum(team1_doctors) - sum(team2_doctors)) + "\n")
     
 def runAllSimulations(num_of_times, file_name):
     results_file = open(file_name, 'w')
-    for i in range(1, DT.team_size):
-        for j in range(1, DT.team_size):
-            runSimulation(num_of_times, i, j, plot=False, file=results_file)
-        results_file.write("##################\n#####################\n#############\n\n\n")
+    results_file.write("Team_Size,T1_Zom,T2_Zom,T1_Victories,T2_Victories,Draws,T1_total_Doc,T2_total_Doc,Doctors_Difference\n")
     results_file.close()
+    for i in range(1, DT.team_size):
+        for j in range(i, DT.team_size):
+            results_file = open(file_name, 'a')
+            runSimulation(num_of_times, i, j, plot=False, file=results_file)
+            results_file.close()
+            
+    print("All Simulations Ended\n")
+    
+    
         
         
         
