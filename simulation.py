@@ -6,7 +6,7 @@ Created on Tue Apr 18 10:17:32 2017
 """
 
 import pylab
-import statistics
+import visualize as VS
 
 import playing_field as PF
 import player as PL
@@ -24,7 +24,7 @@ FN.setStartingPosition(team1_starting_positions, z1, 0)
 FN.setStartingPosition(team2_starting_positions, z2, DT.width)
     
 
-def runSimulation(num_of_times, num_zomb_team1 = z1, num_zomb_team2 = z2, plot=True, file=None):
+def runSimulation(num_of_times, num_zomb_team1 = z1, num_zomb_team2 = z2, plot=True, file=None, visualize=False):
     """
     Run the simulation for a number of times set with the parameter num_times
     Plot the results
@@ -84,17 +84,27 @@ def runSimulation(num_of_times, num_zomb_team1 = z1, num_zomb_team2 = z2, plot=T
         test_field.getNewCheckpoints()
 
         
+        if visualize:
+            interface = VS.GameVisualization(test_field, team1, team2)
+            
+        
         failed = False
         while test_field.getNumberOfHumans() > 0:
             test_field.playersInteractions()
             test_field.movePlayers()
             test_field.updateStatusOfPlayers()
             i += 1
-
+            
+            if visualize:
+                interface.update(test_field.all_players)
+                
             if i > 1200 * DT.resolution:
                 print("simulation taking too long")
                 failed = True
                 break
+            
+        if visualize:
+            interface.done()
 
         number_of_steps.append(i)
             
@@ -170,7 +180,8 @@ def runAllSimulations(num_of_times, file_name):
     print("All Simulations Ended\n")
     
     
-        
+def visualizeSimulation():
+    runSimulation(1, z1, z2, plot=False, visualize=True)
         
         
         

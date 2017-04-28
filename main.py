@@ -5,15 +5,16 @@ Created on Wed Apr 19 13:10:48 2017
 @author: aanas / anasLearn / Anas Aamoum
 """
 
-from simulation import runSimulation, runAllSimulations
+from simulation import runSimulation, runAllSimulations, visualizeSimulation
 
 
 
 
-#runSimulation(num_of_times = 5)
+#runSimulation(num_of_times = 10)
 
 
 
 #This runs all the combinations. Choose file format txt or csv
-runAllSimulations(num_of_times = 1000, file_name="results_standard_speed.csv")
+#runAllSimulations(num_of_times = 1, file_name="test_speed.csv")
+visualizeSimulation()
 

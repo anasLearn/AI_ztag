@@ -18,8 +18,12 @@ speed_range = (5, 5) # Possible range of speed of players in m/s, the speed of e
 height = 15
 width = 29
 num_of_checkpoints = 4
+window_size = 40 # change this if the visualization window is too big or too small
 
 
 #Teams' size
 team_size = 10
 
+
+#simulation speed: the bigger the number the slower the simulation. 1 => real time
+sim_speed = 1

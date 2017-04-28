@@ -72,7 +72,7 @@ class Player(object):
         Move the player to a new position.
         A Player attempts to reach its target, or moves randomly (Doctor)
         If the nextPosition is outside the field, the player doesn't move and changes its direction
-        """        
+        """       
         nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed)
         if self.field.isPositionInField(nextPosition):
             self.x = nextPosition[0]
