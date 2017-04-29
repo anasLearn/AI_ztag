@@ -12,7 +12,7 @@ effect_distance = 1 # The distance under which the interactions between players 
 effect_time = 1 # how much time the players has to be next to each other to produce an effect in seconds
 disability_period = 20 #The period the Doctor and Zombie are disabled after they meet (in seconds)
 infection_period = 20 #The period a Human stays infected before he/she turns to a Zombie if not healed (in seconds)
-speed_range = (5, 5) # Possible range of speed of players in m/s, the speed of each player is picked up randomly from this range
+speed_range = (2, 7) # Possible range of speed of players in m/s, the speed of each player is picked up randomly from this range
               
 #size of the field
 height = 15

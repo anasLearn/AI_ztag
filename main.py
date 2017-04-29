@@ -10,7 +10,7 @@ from simulation import runSimulation, runAllSimulations, visualizeSimulation
 
 
 
-#runSimulation(num_of_times = 10)
+#runSimulation(num_of_times = 100)
 
 
 

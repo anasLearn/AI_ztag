@@ -10,7 +10,7 @@ import math
 # === 
 
     
-def getNewPosition(old_x, old_y, target, angle, speed):
+def getNewPosition(old_x, old_y, target, angle, speed, chased):
     """
     Computes and returns the new Position after a single clock-tick has
     passed, with this object as the current position, and with the
@@ -29,6 +29,9 @@ def getNewPosition(old_x, old_y, target, angle, speed):
         else:
             delta_y = speed * (target.y - old_y)/distance
             delta_x = speed * (target.x - old_x)/distance
+        if chased:
+            delta_x = - delta_x
+            delta_y = - delta_y
     else:
         angle = float(angle)
         # Compute the change in position

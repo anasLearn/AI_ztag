@@ -51,6 +51,7 @@ class Player(object):
         self.mark_checkpoint_counter = 0 #When healthy "Human" is near a "checkpoint" this counter starts incrementing
         self.to_zombie_counter = 0 #When a "Human" is infected, this counter starts incrementing
         self.to_healed_counter = 0 #when a "Human" is infected, and is near a "Doctor" this counter increments
+        self.chased = False
         
         
         #Attributes for "Doctor" and "Zombie"
@@ -72,13 +73,17 @@ class Player(object):
         Move the player to a new position.
         A Player attempts to reach its target, or moves randomly (Doctor)
         If the nextPosition is outside the field, the player doesn't move and changes its direction
-        """       
-        nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed)
-        if self.field.isPositionInField(nextPosition):
-            self.x = nextPosition[0]
-            self.y = nextPosition[1]            
-        else:
+        """
+        nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed, self.chased)
+        while(not self.field.isPositionInField(nextPosition)):
             self.direction = random.randrange(360)
+            nextPosition = FN.getNewPosition(self.x, self.y, None, self.direction, self.speed, self.chased)
+       
+        self.x = nextPosition[0]
+        self.y = nextPosition[1]            
+        
+            
+            
             
     def calculateDistance(self, other):
         """
@@ -123,11 +128,22 @@ class Player(object):
             The nearest active Doctor from either team, if the human is infected
         """
         self.target = None
+        self.chased = False
         min_distance = 0
-        if not self.infected:            
-            for checkpoint in self.field.checkpoints:
-                if checkpoint not in self.reached_checkpoints:
-                    min_distance = FN.setTarget(min_distance, self, checkpoint)
+        if not self.infected:
+            #detect the nearest zombie from the other team        
+            for player in self.field.all_players:                
+                if player.team != self.team and player.kind == "Zombie" and player.disabled == False:
+                    min_distance = FN.setTarget(min_distance, self, player)
+            if min_distance < 2.5 and min_distance > 1.5:
+                self.chased = True
+                
+            else:
+                min_distance = 0
+                self.target = None
+                for checkpoint in self.field.checkpoints:
+                    if checkpoint not in self.reached_checkpoints:
+                        min_distance = FN.setTarget(min_distance, self, checkpoint)
                     
         else:
             for player in self.field.all_players:
@@ -206,7 +222,7 @@ class Player(object):
                 if checkpoint not in self.reached_checkpoints and self.calculateDistance(checkpoint) < DT.effect_distance:
                     number_of_checkpoints_nearby += 1 #The condition of the if is True => There is a checkpoint nearby
                     self.mark_checkpoint_counter += 1
-                    if self.mark_checkpoint_counter == DT.resolution * DT.effect_time:
+                    if self.mark_checkpoint_counter >= DT.resolution * DT.effect_time:
                         self.reached_checkpoints.append(checkpoint)
                         self.mark_checkpoint_counter = 0
             if number_of_checkpoints_nearby == 0:
