@@ -80,8 +80,21 @@ class Field(object):
         
         
     def playersInteractions(self):
+        for player1 in self.all_players:
+            if player1.kind == "Doctor" and not player1.disabled:
+                for player2 in self.all_players:
+                    if player2.kind == "Zombie" and not player2.disabled and (player1.calculateDistance(player2) < DT.effect_distance):
+                        if random.random() < 0.5:
+                            player1.disabled = True
+                            break
+                        else:
+                            player2.disabled = True
+                        
+                        
+                        
         for player in self.all_players:
-            player.interactions()
+            if player.kind == "Human":
+                player.interactions()
         
 
 
