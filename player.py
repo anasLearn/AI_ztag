@@ -75,7 +75,7 @@ class Player(object):
         If the nextPosition is outside the field, the player changes its direction and attempts to move
         """
         nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed, self.chased)
-        while(not self.field.isPositionInField(nextPosition)):
+        while(not self.field.isPositionInField(nextPosition) or (self.kind == "Zombie" and self.checkpointNearby(nextPosition))):
             self.direction = random.randrange(360)
             nextPosition = FN.getNewPosition(self.x, self.y, None, self.direction, self.speed, self.chased)
        
@@ -125,6 +125,7 @@ class Player(object):
         """
         The human's target is:
             The nearest un-reached checkpoint wether the human is infected or not
+        The human runs from the zombie if the latter is nearby
         """
         self.target = None
         self.chased = False
@@ -208,22 +209,42 @@ class Player(object):
             self.to_zombie_counter += 1
             if self.to_zombie_counter >= DT.resolution * DT.infection_period:
                 self.kind = "Zombie"
-                return 0
-            if self.to_healed_counter >= 1:
+                return
+            if self.to_healed_counter >= DT.resolution * DT.effect_time:
                 self.infected = False
+                self.to_infected_counter = 0
+                self.to_zombie_counter = 0
+                self.to_healed_counter = 0 
                 
+        #if a zombie has been nearby for the effect_time, the human becomes infected
+        else:
+            if self.to_infected_counter >= DT.resolution * DT.effect_time:
+                self.infected = True
+                self.to_infected_counter = 0
+                self.mark_checkpoint_counter = 0
+                self.to_zombie_counter = 0
+                self.to_healed_counter = 0
+            
 
+        
+        number_of_checkpoints_nearby = 0
         for checkpoint in self.field.checkpoints:
             if checkpoint not in self.reached_checkpoints and self.calculateDistance(checkpoint) < DT.effect_distance:
-                self.reached_checkpoints.append(checkpoint)
-                self.infected = False
+                number_of_checkpoints_nearby += 1 #The condition of the if is True => There is a checkpoint nearby
+                self.mark_checkpoint_counter += 1
+                if self.mark_checkpoint_counter >= DT.resolution * DT.effect_time:
+                    self.reached_checkpoints.append(checkpoint)
+                    self.mark_checkpoint_counter = 0
+                    self.infected = False
+                    self.to_infected_counter = 0
+                    self.to_zombie_counter = 0
+                    self.to_healed_counter = 0 
+        if number_of_checkpoints_nearby == 0:
+            self.mark_checkpoint_counter = 0
         if len(self.reached_checkpoints) == DT.num_of_checkpoints:
             self.kind = "Doctor"
-        #if a zombie is nearby
-        elif self.to_infected_counter >= 1:
-            self.infected = True
-            self.to_infected_counter = 0
-            self.to_zombie_counter = 0
+        
+
                 
                 
     def interactions(self):
@@ -243,14 +264,29 @@ class Player(object):
         Infected humans are affect by doctors
         """
         if self.infected:
+            number_doctors_nearby = 0
             for player in self.field.all_players:
                 if player.kind == "Doctor" and not player.disabled and self.calculateDistance(player) < DT.effect_distance:
                     self.to_healed_counter += 1
+                    number_doctors_nearby += 1
+            if number_doctors_nearby == 0:
+                self.to_healed_counter = 0
             
         else:
+            number_zombies_nearby = 0
             for player in self.field.all_players:
                 if player.kind == "Zombie" and not player.disabled and self.calculateDistance(player) < DT.effect_distance:
                     self.to_infected_counter += 1
+                    number_zombies_nearby += 1
+            if number_zombies_nearby == 0:
+                self.to_infected_counter = 0
         
         
+    def checkpointNearby(self, position):
+        distances = []
+        for checkpoint in self.field.checkpoints:
+            distances.append(math.sqrt((position[0] - checkpoint.x)**2 + (position[1] - checkpoint.y)**2))
+        if min(distances) < DT.effect_distance:
+            return True
+        return False
         
