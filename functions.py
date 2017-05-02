@@ -7,6 +7,7 @@ Created on Tue Apr 18 11:58:04 2017
 import data as DT
 
 import math
+import random
 # === 
 
     
@@ -57,7 +58,9 @@ def setTarget(min_distance, chaser, target):
 def setStartingPosition(positions, num_of_zombies, abscissa):
     dist = DT.height / (num_of_zombies + 1)
     for i in range(num_of_zombies):
-        positions.append((abs(abscissa - 2), (i + 1) * dist))
+        x = DT.width/2 - 3 + 6 * random.random()
+        y = DT.height/2 - 3 + 6 * random.random()
+        positions.append((x, y))
     dist = DT.height / (DT.team_size - num_of_zombies + 1)
     for i in range(DT.team_size - num_of_zombies):
         positions.append((abs(abscissa - 0.1), (i + 1) * dist))

@@ -73,10 +73,11 @@ class Field(object):
             player.updateStatus()
 
                         
-    def movePlayers(self):
+    def movePlayers(self, i):            
         for player in self.all_players:
-            player.selectTarget()
-            player.updatePosition()
+            if not (player.kind == "Zombie" and i < 10 * DT.resolution):
+                player.selectTarget()
+                player.updatePosition()
         
         
     def playersInteractions(self):

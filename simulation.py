@@ -89,9 +89,10 @@ def runSimulation(num_of_times, num_zomb_team1 = z1, num_zomb_team2 = z2, plot=T
             
         
         failed = False
+        i = 0
         while test_field.getNumberOfHumans() > 0:
             test_field.playersInteractions()
-            test_field.movePlayers()
+            test_field.movePlayers(i)
             test_field.updateStatusOfPlayers()
             i += 1
             
