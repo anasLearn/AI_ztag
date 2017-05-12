@@ -30,9 +30,11 @@ class Field(object):
         
         """
         #Checkpoints
-        self.checkpoints = []        
+        self.checkpoints = [] 
+        self.all_checkpoints = []       
         for i in range(DT.num_of_checkpoints):            
             self.checkpoints.append(Checkpoint(i + 1))
+            self.all_checkpoints.append((self.checkpoints[-1], {"state":"Activable", "counter" : 0}))
             
         print("Field Created")
         
@@ -71,11 +73,13 @@ class Field(object):
     def updateStatusOfPlayers(self):
         for player in self.all_players:
             player.updateStatus()
+            
+        self.updateCheckpoints()
 
                         
     def movePlayers(self, i):            
         for player in self.all_players:
-            if not (player.kind == "Zombie" and i < 10 * DT.resolution):
+            if not (player.kind == "Zombie" and i < DT.zombie_stop * DT.resolution):
                 player.selectTarget()
                 player.updatePosition()
         
@@ -99,8 +103,28 @@ class Field(object):
         
 
 
-                        
+    def activiateCheckpoint(self, checkpoint):
+        for chck in self.all_checkpoints:
+            if checkpoint == chck[0]:
+                if chck[1]["state"] == "Activable":
+                    chck[1]["state"] = "Active"
 
+
+    def updateCheckpoints(self):
+        for chck in self.all_checkpoints:
+            if chck[1]["state"] == "Active":
+                chck[1]["counter"] += 1
+                if chck[1]["counter"] == DT.cool_period[0] * DT.resolution or DT.cool_period[0] == 0:
+                    chck[1]["state"] = "Disabled"
+                    chck[1]["counter"] = 0
+                    self.checkpoints.remove(chck[0])
+                    
+            elif chck[1]["state"] == "Disabled":
+                chck[1]["counter"] += 1
+                if chck[1]["counter"] == DT.cool_period[1] * DT.resolution or DT.cool_period[1] == 0:
+                    chck[1]["state"] = "Activable"
+                    chck[1]["counter"] = 0
+                    self.checkpoints.append(chck[0])
                             
 
                 

@@ -41,10 +41,10 @@ class GameVisualization:
         self.w.create_rectangle(x1, y1, x2, y2, fill = "grey")
         
         #Draw the checkpoints
-        for checkpoint in field.checkpoints:
-            x = 25 + checkpoint.x * self.one_meter
-            y = 25 + checkpoint.y * self.one_meter            
-            self.w.create_rectangle(x-3, y-3, x+3, y+3, fill="black")
+        for checkpoint in self.field.all_checkpoints:
+            x = 25 + checkpoint[0].x * self.one_meter
+            y = 25 + checkpoint[0].y * self.one_meter            
+            self.w.create_rectangle(x-6, y-6, x+6, y+6, fill="black")
             
         
         
@@ -62,6 +62,18 @@ class GameVisualization:
     def update(self, players):
         "Redraws the visualization with the players."
 
+        
+        #Draw the checkpoints
+        for checkpoint in self.field.all_checkpoints:
+            x = 25 + checkpoint[0].x * self.one_meter
+            y = 25 + checkpoint[0].y * self.one_meter            
+            self.w.create_rectangle(x-6, y-6, x+6, y+6, fill="black")
+        #Draw the active checkpoints
+        for checkpoint in self.field.checkpoints:
+            x = 25 + checkpoint.x * self.one_meter
+            y = 25 + checkpoint.y * self.one_meter            
+            self.w.create_rectangle(x-6, y-6, x+6, y+6, fill="yellow")
+        
         # Delete all existing players.
         if self.players:
             for player in self.players:

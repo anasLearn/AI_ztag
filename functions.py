@@ -33,6 +33,9 @@ def getNewPosition(old_x, old_y, target, angle, speed, chased):
         if chased:
             delta_x = - delta_x
             delta_y = - delta_y
+#            delta_x, delta_y = -delta_x + delta_y, -delta_y - delta_x
+#            delta_x, delta_y = delta_x / math.sqrt(2), delta_y / math.sqrt(2)
+#            delta_x, delta_y = delta_y, - delta_x
     else:
         angle = float(angle)
         # Compute the change in position
