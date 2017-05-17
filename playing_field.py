@@ -43,8 +43,8 @@ class Field(object):
         Used to set new checkpoints at the beginning of each game
         """
         for checkpoint in self.checkpoints:
-            checkpoint.x = DT.width * random.random()
-            checkpoint.y = DT.height * random.random()
+            checkpoint.x = 1 + (DT.width - 2) * random.random()
+            checkpoint.y = 1 + (DT.height - 2) * random.random()
             
     def addPlayers(self, team1, team2):
         self.all_players = team1 + team2

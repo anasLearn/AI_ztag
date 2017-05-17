@@ -13,23 +13,23 @@ import player as PL
 import functions as FN
 import data as DT
 
-#starting positions of both teams in opposite ends of the field
-team1_starting_positions= []
-team2_starting_positions= []
 
-z1 = int(input("Enter number of zombies for Team 1: "))
-z2 = int(input("Enter number of zombies for Team 2: "))
-
-FN.setStartingPosition(team1_starting_positions, z1, 0)
-FN.setStartingPosition(team2_starting_positions, z2, DT.width)
     
 
-def runSimulation(num_of_times, num_zomb_team1 = z1, num_zomb_team2 = z2, plot=True, file=None, visualize=False):
+def runSimulation(num_of_times, num_zomb_team1 = DT.z1, num_zomb_team2 = DT.z2, plot=True, file=None, visualize=False):
     """
     Run the simulation for a number of times set with the parameter num_times
     Plot the results
     """
-
+    
+    #starting positions of both teams in opposite ends of the field
+    team1_starting_positions= []
+    team2_starting_positions= []
+    
+    FN.setStartingPosition(team1_starting_positions, DT.z1, 0)
+    FN.setStartingPosition(team2_starting_positions, DT.z2, DT.width)
+    
+    
     
     test_field = PF.Field()
     team1 = []
@@ -182,7 +182,7 @@ def runAllSimulations(num_of_times, file_name):
     
     
 def visualizeSimulation():
-    runSimulation(1, z1, z2, plot=False, visualize=True)
+    runSimulation(1, DT.z1, DT.z2, plot=False, visualize=True)
         
         
         

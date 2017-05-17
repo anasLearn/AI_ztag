@@ -11,7 +11,7 @@ import random
 # === 
 
     
-def getNewPosition(old_x, old_y, target, angle, speed, chased):
+def getNewPosition(old_x, old_y, target, angle, speed, chased, rotate="na"):
     """
     Computes and returns the new Position after a single clock-tick has
     passed, with this object as the current position, and with the
@@ -31,10 +31,18 @@ def getNewPosition(old_x, old_y, target, angle, speed, chased):
             delta_y = speed * (target.y - old_y)/distance
             delta_x = speed * (target.x - old_x)/distance
         if chased:
-            delta_x = - delta_x
-            delta_y = - delta_y
+            if rotate == "clockwise":
+                delta_x, delta_y = delta_y, - delta_x
+            elif rotate == "c_clockwise":
+                delta_x, delta_y = -delta_y, delta_x
+            else:
+                delta_x = - delta_x
+                delta_y = - delta_y
+            
 #            delta_x, delta_y = -delta_x + delta_y, -delta_y - delta_x
 #            delta_x, delta_y = delta_x / math.sqrt(2), delta_y / math.sqrt(2)
+        
+        
 #            delta_x, delta_y = delta_y, - delta_x
     else:
         angle = float(angle)
@@ -61,8 +69,8 @@ def setTarget(min_distance, chaser, target):
 def setStartingPosition(positions, num_of_zombies, abscissa):
     dist = DT.height / (num_of_zombies + 1)
     for i in range(num_of_zombies):
-        x = DT.width/2 - 3 + 6 * random.random()
-        y = DT.height/2 - 3 + 6 * random.random()
+        x = DT.width/2 - 4 + 8 * random.random()
+        y = DT.height/2 - 4 + 8 * random.random()
         positions.append((x, y))
     dist = DT.height / (DT.team_size - num_of_zombies + 1)
     for i in range(DT.team_size - num_of_zombies):

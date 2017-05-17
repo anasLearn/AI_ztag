@@ -10,9 +10,14 @@ from tkinter import *
 import time
 
 
-class GameVisualization:
+class GameVisualization(Frame):
     def __init__(self, field, team1, team2, delay = DT.sim_speed / DT.resolution):
-        "Initializes a visualization with the specified parameters."
+        "Initializes a visualization with the specified parameters."  
+        
+        
+        
+        
+        
         
         self.team1 = team1
         self.team2 = team2
@@ -31,6 +36,9 @@ class GameVisualization:
 
         # Initialize a drawing surface
         self.master = Tk()
+        # changing the title of our master widget      
+        self.master.title("ztag Simulation")
+        self.master.iconbitmap('favicon.png')
         self.w = Canvas(self.master, width=w_dim, height=h_dim)
         self.w.pack()
         self.master.update()
@@ -84,7 +92,7 @@ class GameVisualization:
         for player in players:
             x, y = 25 + self.one_meter * player.x, 25 + self.one_meter * player.y
             if player.kind == "Doctor":
-                color = "blue"
+                color = "white"
                 if player.disabled:
                     color = "yellow"
             elif player.kind == "Human":
@@ -101,7 +109,7 @@ class GameVisualization:
             elif player.team == self.team2:
                 sign = "2"
             
-            self.players.append(self.w.create_rectangle(x-10, y-10, x+10, y+10,fill=color))
+            self.players.append(self.w.create_rectangle(x-8, y-8, x+8, y+8,fill=color))
             self.players.append(self.w.create_text(x, y, text=sign, fill = "black"))
         # Update text
         self.w.delete(self.text)
@@ -112,5 +120,6 @@ class GameVisualization:
 
     def done(self):
         "Indicate that the animation is done so that we allow the user to close the window."
+        return
         mainloop()
         
