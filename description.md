@@ -16,6 +16,14 @@ Zombies want to infect humans and turn them into zombies. At first infection, hu
 
 Doctors can heal infected humans. They must still avoid zombies as their healing abilits may become disabled for 20 seconds if they encounter a zombie (50% chance).
 
+Infected human can also be healed if they check in an active checkpoint they haven't checked before.
+
+When a human is infected, he/she has a safe period of 3 seconds. After that period, if he/she meets a zombie, he turn to a zombie immediately. Otherwise he/she will turn after 20 seconds, if not healed by a doctor or a checkpoint.
+
+#### Checkpoints:
+When a human checks a checkpoint, it remains active for 5 seconds, and then it deactivates for 10 seconds. When, a checkpoint is deactivated, humans can't check it.
+When a checkpoint is active, zombies can't get near it.
+
 
 #### Game objective:
 2 teams, each with 9 humans and 1 zombie player to start. Objective is to infect all of the opposing team into zombies while having your own humans become doctors. At the end of the round, all players are either zombies or doctors. Points are calculated based on difference in number of doctors on each team.  Example team A has 4 doctors and 6 zombies while team B has 1 doctor and 9 zombie. Therefore team A scores 3 points (4 - 1). After 10 rounds we see which team has the higher score.
@@ -34,6 +42,10 @@ Each Doctor goes to the nearest infected human from the same team. If all the hu
 
 Human also run away from zombies. If a zombie is standing between a human and the checkpoint he/she is trying to reach,  the human circles around the zombie, and then tries to run towards the checkpoint.
 If the zombie is too close, the human runs away from it towards a checkpoint or in a randomly chosen direction.
+
+![goes to checkpoint](https://raw.githubusercontent.com/anasLearn/ztag/master/images/1.JPG "goes to checkpoint")
+
+![circles around](https://raw.githubusercontent.com/anasLearn/ztag/master/images/2.JPG "circles around")
 
 #### 1st milestone:
 Implement a simulation of the game with each team starting with 10 players (9 Humans + 1 Zombie)

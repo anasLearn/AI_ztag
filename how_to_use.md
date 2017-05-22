@@ -1,9 +1,12 @@
 # How to use the simulation
 The user can set the pre-conditions of the simulation in the file `data.py`
 
-In the file `main.py`, the user can run one simulation with the the function `runSimulation`.
-The parameters `num_of_times` indicates how many times the simulation will be executed.
+To launch the program, execute the file "execute.bat" if you are running on windows, or run the command python3 main.py if you are using another OS.
 
-When `runSimulation` is executed, a the user is asked to indicate the number of zombies in each team.
+The interface allows you to choose the preliminary conditions for the simulation. And then you can:
+- Visualize a game.
+- Run the simulation for a specific number of times.
+- Run all possible simulations for a specific number of times.
 
-The function `runAllSimulations` runs all possible combination of games with all possible numbers of zombies at the start of the game. The results are registered in a file that the user can choose.
+![interface](https://raw.githubusercontent.com/anasLearn/ztag/master/images/3.JPG "interface")
+

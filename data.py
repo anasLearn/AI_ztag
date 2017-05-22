@@ -34,5 +34,5 @@ z1 = 4 #zombies in team1
 z2 = 5 #zombies in team2
 
 #simulation speed: the bigger the number the slower the simulation. 1 => real time
-sim_speed = 2
+sim_speed = 1
 
