@@ -108,9 +108,9 @@ class Player(object):
 
                     
         #the 0.5m condition here
-        for player in self.field.all_players:
-            if player != self and player.calculateDistance(self, coord = (nextPosition[0], nextPosition[1])) < 0.5:
-                nextPosition = ( (nextPosition[0] + self.x) / 2, (nextPosition[1] + self.y) / 2)
+#        for player in self.field.all_players:
+#            if player != self and player.calculateDistance(self, coord = (nextPosition[0], nextPosition[1])) < 0.5:
+#                nextPosition = ( (nextPosition[0] + self.x) / 2, (nextPosition[1] + self.y) / 2)
         
         self.x = nextPosition[0]
         self.y = nextPosition[1]            
