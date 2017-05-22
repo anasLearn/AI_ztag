@@ -32,6 +32,9 @@ Each zombie chases the nearest healthy human of the other team. If all the human
 Each Human goes through the checkpoints. If the Human is infected, he/she goes to the nearest doctor.
 Each Doctor goes to the nearest infected human from the same team. If all the humans from the same team are healthy, the doctor moves randomly in the field.
 
+Human also run away from zombies. If a zombie is standing between a human and the checkpoint he/she is trying to reach,  the human circles around the zombie, and then tries to run towards the checkpoint.
+If the zombie is too close, the human runs away from it towards a checkpoint or in a randomly chosen direction.
+
 #### 1st milestone:
 Implement a simulation of the game with each team starting with 10 players (9 Humans + 1 Zombie)
 Plot the result of the end of the game.

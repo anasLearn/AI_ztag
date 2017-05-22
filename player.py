@@ -44,6 +44,7 @@ class Player(object):
         self.direction = random.randrange(360)
         self.target = None
         
+        self.rotate = random.choice(["clockwise", "c_clockwise"])
         
         #Attributes for "Human"
         self.reached_checkpoints = []
@@ -88,57 +89,41 @@ class Player(object):
             #This part of the code is tricky, to be reviewed in case of problem
             else:
                 nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed, self.chased)
-                i = 0
-                while (not self.field.isPositionInField(nextPosition)) or (self.checkpointNearby(nextPosition)):
-                    #if the next position is out of the field, change the direction
-                    if not self.field.isPositionInField(nextPosition) or self.target == None:
-                        self.direction = random.randrange(360)
-                        nextPosition = FN.getNewPosition(self.x, self.y, None, self.direction, self.speed, self.chased)
-                        
-                    
-                    else:
-                        #if following the target will lead to a non permitted position near a checkpoint
-                        if self.checkpointNearby(nextPosition):
-                            nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed, chased = "True", rotate="clockwise")
-                            
-                        if self.checkpointNearby(nextPosition):
-                            nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed, chased = "True", rotate="c_clockwise")
-                        if self.checkpointNearby(nextPosition):
-                            nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed, chased = "True")
-                            
-                        
-                        if self.field.isPositionInField(nextPosition):
-                            break
-                        else:
-                            self.direction = random.randrange(360)
-                            nextPosition = FN.getNewPosition(self.x, self.y, None, self.direction, self.speed, self.chased)
-                        i += 1
-                        if i == 100:
-                            assert False
-
-
-        #Human or Doctor
+                while(not self.field.isPositionInField(nextPosition)):
+                   self.direction = random.randrange(360)
+                   nextPosition = FN.getNewPosition(self.x, self.y, None, self.direction, self.speed, self.chased)
+                
+                #Changing the direction is to make sure that the zombie doesn't just keep returning to the checkpoint zone in the same way, but instead keeps circling around it 
+                self.direction = (self.direction + 90) % 360
+   
+       #Human or Doctor
         else:
-            nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed, self.chased)
+            nextPosition = FN.getNewPosition(self.x, self.y, self.target, self.direction, self.speed, self.chased, self.rotate)
             while(not self.field.isPositionInField(nextPosition)):
                 #if following (or running away from) the target will lead to a non permitted position, remove the target
-                nextPosition = FN.getNewPosition(self.x, self.y, None, self.direction, self.speed, self.chased)
+                nextPosition = FN.getNewPosition(self.x, self.y, None, self.direction, self.speed, self.chased, self.rotate)
                 #if following the direction will lead to a position outside the filed, change the direction
                 if (not self.field.isPositionInField(nextPosition)):
                     self.direction = random.randrange(360)
 
                     
-        #add the 0.5m condition here
+        #the 0.5m condition here
+        for player in self.field.all_players:
+            if player != self and player.calculateDistance(self, coord = (nextPosition[0], nextPosition[1])) < 0.5:
+                nextPosition = ( (nextPosition[0] + self.x) / 2, (nextPosition[1] + self.y) / 2)
+        
         self.x = nextPosition[0]
         self.y = nextPosition[1]            
         
             
             
             
-    def calculateDistance(self, other):
+    def calculateDistance(self, other, coord = None):
         """
         Calculate the distance from the current player to another player or checkpoint
         """
+        if coord is not None:
+            return math.sqrt((self.x - coord[0])**2 + (self.y - coord[1])**2)
         return math.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
             
     def selectTarget(self):
@@ -189,8 +174,17 @@ class Player(object):
                     BA = A - B
                     BC = C - B
                     
-                    cosine = np.dot(BA, BC) / (np.linalg.norm(BA) * np.linalg.norm(BC))
-                    angle = np.arccos(cosine)
+                    angle = math.pi / 2
+                    cosinus = 0
+                    try:
+                        cosinus = np.dot(BA, BC) / (np.linalg.norm(BA) * np.linalg.norm(BC))
+
+                    except:
+                        print("0 division")
+                    if -1 <= cosinus and cosinus <= 1:
+                        angle = np.arccos(cosinus)
+                    
+
                     if angle <= math.pi / 4:
                         return True
             return False

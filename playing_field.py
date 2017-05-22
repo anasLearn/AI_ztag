@@ -77,7 +77,8 @@ class Field(object):
         self.updateCheckpoints()
 
                         
-    def movePlayers(self, i):            
+    def movePlayers(self, i):
+                    
         for player in self.all_players:
             if not (player.kind == "Zombie" and i < DT.zombie_stop * DT.resolution):
                 player.selectTarget()
