@@ -20,8 +20,8 @@ safe_zone = 2.5 #distance Zombies can't approach checkpoints
 
 
 #size of the field
-height = 15*2
-width = 29*2
+height = 15*1
+width = 29*1
 num_of_checkpoints = 4
 
 #Don't change this!
@@ -35,4 +35,5 @@ z2 = 0 #zombies in team2
 
 #simulation speed: the bigger the number the slower the simulation. 1 => real time
 sim_speed = 1
+
 

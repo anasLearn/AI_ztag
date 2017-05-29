@@ -12,8 +12,9 @@ from simulation import runSimulation, runAllSimulations, visualizeSimulation
 
 class Interface(Frame):
     
-    """Notre fenêtre principale.
-    Tous les widgets sont stockés comme attributs de cette fenêtre."""
+    """
+    Main window. All widgets are attributes of this class
+    """
     
     def __init__(self, master=None):
         Frame.__init__(self, master)               

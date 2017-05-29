@@ -22,6 +22,8 @@ def runSimulation(num_of_times, num_zomb_team1 = DT.z1, num_zomb_team2 = DT.z2, 
     Plot the results
     """
     
+
+    
     #starting positions of both teams in opposite ends of the field
     team1_starting_positions= []
     team2_starting_positions= []
@@ -92,8 +94,8 @@ def runSimulation(num_of_times, num_zomb_team1 = DT.z1, num_zomb_team2 = DT.z2, 
         i = 0
         while test_field.getNumberOfHumans() > 0:
             test_field.playersInteractions()
-            test_field.movePlayers(i)
             test_field.updateStatusOfPlayers()
+            test_field.movePlayers(i)
             i += 1
             
             if visualize:
@@ -125,7 +127,9 @@ def runSimulation(num_of_times, num_zomb_team1 = DT.z1, num_zomb_team2 = DT.z2, 
                 results["draws"] += 1
         else:            
             results["fail"] += 1
+        #End of the function oneSimulation
 
+    
 
     for j in range(num_of_times):        
         print("simulation number", j + 1, "running...", end=" ")
@@ -167,13 +171,14 @@ def runSimulation(num_of_times, num_zomb_team1 = DT.z1, num_zomb_team2 = DT.z2, 
         file.write(str(sum(team1_doctors)) + ",")
         file.write(str(sum(team2_doctors)) + ",")
         file.write(str(sum(team1_doctors) - sum(team2_doctors)) + "\n")
+        
     
 def runAllSimulations(num_of_times, file_name):
     results_file = open(file_name, 'w')
     results_file.write("Team_Size,T1_Zom,T2_Zom,T1_Victories,T2_Victories,Draws,T1_total_Doc,T2_total_Doc,Doctors_Difference\n")
     results_file.close()
     for i in range(1, DT.team_size):
-        for j in range(i, DT.team_size):
+        for j in range(1, DT.team_size):
             results_file = open(file_name, 'a')
             runSimulation(num_of_times, i, j, plot=False, file=results_file)
             results_file.close()

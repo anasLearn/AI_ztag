@@ -42,12 +42,19 @@ class Field(object):
         """
         Used to set new checkpoints at the beginning of each game
         """
-        for checkpoint in self.checkpoints:
-            checkpoint.x = 1 + (DT.width - 2) * random.random()
-            checkpoint.y = 1 + (DT.height - 2) * random.random()
+        self.checkpoints = []
+        for checkpoint in self.all_checkpoints:
+            self.checkpoints.append(checkpoint[0])
+            self.checkpoints[-1].x = 1 + (DT.width - 2) * random.random()
+            self.checkpoints[-1].y = 1 + (DT.height - 2) * random.random()
+            
+            checkpoint = (checkpoint[0], {"state":"Activable", "counter" : 0})
             
     def addPlayers(self, team1, team2):
-        self.all_players = team1 + team2
+        self.all_players = []
+        for i in range(len(team1)):
+            self.all_players.append(team1[i])
+            self.all_players.append(team2[i])
     
 
     def isPositionInField(self, pos):
@@ -89,7 +96,7 @@ class Field(object):
         for player1 in self.all_players:
             if player1.kind == "Doctor" and not player1.disabled:
                 for player2 in self.all_players:
-                    if player2.kind == "Zombie" and not player2.disabled and (player1.calculateDistance(player2) < DT.effect_distance):
+                    if player2.kind == "Zombie" and player2.team != player1.team and not player2.disabled and (player1.calculateDistance(player2) < DT.effect_distance):
                         if random.random() < 0.5:
                             player1.disabled = True
                             break
@@ -104,7 +111,7 @@ class Field(object):
         
 
 
-    def activiateCheckpoint(self, checkpoint):
+    def activateCheckpoint(self, checkpoint):
         for chck in self.all_checkpoints:
             if checkpoint == chck[0]:
                 if chck[1]["state"] == "Activable":

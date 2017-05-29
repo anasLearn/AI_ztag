@@ -107,10 +107,12 @@ class Player(object):
                     self.direction = random.randrange(360)
 
                     
-        #the 0.5m condition here
-#        for player in self.field.all_players:
-#            if player != self and player.calculateDistance(self, coord = (nextPosition[0], nextPosition[1])) < 0.5:
-#                nextPosition = ( (nextPosition[0] + self.x) / 2, (nextPosition[1] + self.y) / 2)
+        #the 0.5m  distance condition here
+        #To be removed if it makes the simulation too slow
+        for player in self.field.all_players:
+            if player != self and player.calculateDistance(self, coord = (nextPosition[0], nextPosition[1])) < 0.5:
+                nextPosition = ( (nextPosition[0] + self.x) / 2, (nextPosition[1] + self.y) / 2)
+                break
         
         self.x = nextPosition[0]
         self.y = nextPosition[1]            
@@ -160,6 +162,7 @@ class Player(object):
         """
         The human's target is:
             The nearest un-reached checkpoint wether the human is infected or not
+            If there is no checkpoint and the human is infected, the target is the nearest doctor
         The human runs from the zombie if the latter is nearby
         """
         def zombieInTheWay(checkpoint):
@@ -190,6 +193,8 @@ class Player(object):
             return False
             
         self.target = None
+        #If the human is not chased anymore, change the rotation, so that the next time, the human runs in the other direction
+        to_rotate = self.chased
         self.chased = False
         min_distance_zombie = 0
         min_distance_doctor = 0
@@ -222,6 +227,8 @@ class Player(object):
                 if player.kind == "Doctor" and not player.disabled:
                    min_distance_doctor = FN.setTarget(min_distance_doctor, self, player)
                 
+        if to_rotate == True and self.chased == False:
+            self.changeRotation()
         
     def doctorSelectTarget(self):
         """
@@ -307,7 +314,7 @@ class Player(object):
                 self.mark_checkpoint_counter += 1
                 if self.mark_checkpoint_counter >= DT.resolution * DT.effect_time:
                     self.reached_checkpoints.append(checkpoint)
-                    self.field.activiateCheckpoint(checkpoint)
+                    self.field.activateCheckpoint(checkpoint)
                     self.mark_checkpoint_counter = 0
                     self.infected = False
                     self.to_infected_counter = 0
@@ -325,17 +332,13 @@ class Player(object):
         """
         The player updates its status, depending on its kind and current status
         """
-        if self.kind == "Zombie":
-            return self.zombieInteractions()
-        elif self.kind == "Human":
+        if self.kind == "Human":
             return self.humanInteractions()
-        elif self.kind == "Doctor":
-            return self.doctorInteractions()
             
     def humanInteractions(self):
         """
         Healthy humans are affected by zombies
-        Infected humans are affect by doctors
+        Infected humans are affected by doctors
         """
         if self.infected:
             number_doctors_nearby = 0
@@ -368,5 +371,11 @@ class Player(object):
         for player in self.field.all_players:
             if player.team != self.team and player.kind == "Zombie" and not player.disabled and self.calculateDistance(player) < DT.effect_distance:
                 return True
+                
+    def changeRotation(self):
+        if self.rotate == "clockwise":
+            self.rotate = "c_clockwise"
+        else:
+            self.rotate = "clockwise"
         
         

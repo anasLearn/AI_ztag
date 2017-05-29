@@ -12,8 +12,7 @@ import time
 
 class GameVisualization(Frame):
     def __init__(self, field, team1, team2, delay = DT.sim_speed / DT.resolution):
-        "Initializes a visualization with the specified parameters."  
-        
+        "Initializes a visualization with the specified parameters."      
         
         
         

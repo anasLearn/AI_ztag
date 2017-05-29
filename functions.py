@@ -14,13 +14,13 @@ import random
 def getNewPosition(old_x, old_y, target, angle, speed, chased, rotate="na"):
     """
     Computes and returns the new Position after a single clock-tick has
-    passed, with this object as the current position, and with the
+    passed, calculated using the current position, the
     specified target, angle and speed.
     Does NOT test whether the returned position fits inside the field.
     target: the point the player is trying to reach. it can be None
     angle: number representing angle in degrees, 0 <= angle < 360
     speed: positive float representing speed
-    Returns: a Position object representing the new position.
+    Returns: a tuple representing the coordinates of the new position.
     """
     if target is not None:
         distance = math.sqrt((target.y - old_y)**2 + (target.x - old_x)**2)
@@ -39,11 +39,7 @@ def getNewPosition(old_x, old_y, target, angle, speed, chased, rotate="na"):
                 delta_x = - delta_x
                 delta_y = - delta_y
             
-#            delta_x, delta_y = -delta_x + delta_y, -delta_y - delta_x
-#            delta_x, delta_y = delta_x / math.sqrt(2), delta_y / math.sqrt(2)
-        
-        
-#            delta_x, delta_y = delta_y, - delta_x
+
     else:
         angle = float(angle)
         # Compute the change in position
